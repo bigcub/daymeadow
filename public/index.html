@@ -807,6 +807,178 @@
     @media (max-width: 380px) {
       .grid { grid-template-columns: 1fr; }
     }
+
+    /* ── Dark mode ──────────────────────────────────────────────────── */
+    [data-theme="dark"] {
+      --bg: #1a1a1e;
+      --surface: #242428;
+      --text: #e8e6e1;
+      --text-mid: #a8a5a0;
+      --text-muted: #6b6965;
+      --border: rgba(255,255,255,0.08);
+      --border-mid: rgba(255,255,255,0.14);
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.3);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.5), 0 20px 48px rgba(0,0,0,0.4);
+    }
+
+    [data-theme="dark"] .header {
+      background: rgba(26, 26, 30, 0.88);
+    }
+
+    [data-theme="dark"] .btn-primary {
+      background: #e8e6e1;
+      color: #1a1a1e;
+    }
+    [data-theme="dark"] .btn-primary:hover {
+      background: #fff;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    }
+
+    [data-theme="dark"] .btn-outline {
+      border-color: rgba(255,255,255,0.18);
+      color: var(--text-mid);
+    }
+    [data-theme="dark"] .btn-outline:hover {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border-color: rgba(255,255,255,0.25);
+    }
+
+    [data-theme="dark"] .btn-ghost:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    [data-theme="dark"] .btn-icon:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--text);
+    }
+
+    [data-theme="dark"] .btn-danger {
+      background: rgba(192,57,43,0.15);
+      color: #e74c3c;
+      border-color: rgba(192,57,43,0.25);
+    }
+    [data-theme="dark"] .btn-danger:hover {
+      background: rgba(192,57,43,0.25);
+    }
+
+    /* Dark card colours */
+    [data-theme="dark"] .cc-cream    { background: #2a2722; }
+    [data-theme="dark"] .cc-sage     { background: #222a23; }
+    [data-theme="dark"] .cc-sky      { background: #21262e; }
+    [data-theme="dark"] .cc-rose     { background: #2c2226; }
+    [data-theme="dark"] .cc-lavender { background: #272430; }
+    [data-theme="dark"] .cc-amber    { background: #2a2720; }
+    [data-theme="dark"] .cc-slate    { background: #24262b; }
+    [data-theme="dark"] .cc-mint     { background: #212b28; }
+
+    /* Card glow in dark */
+    [data-theme="dark"] .card::after {
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* Today card */
+    [data-theme="dark"] .card-today {
+      background: var(--surface);
+    }
+
+    /* Modal & confirm */
+    [data-theme="dark"] .modal {
+      background: #2a2a2e;
+    }
+    [data-theme="dark"] .confirm-box {
+      background: #2a2a2e;
+    }
+
+    /* Form inputs */
+    [data-theme="dark"] .field-input {
+      border-color: rgba(255,255,255,0.12);
+      background: #1e1e22;
+      color: var(--text);
+    }
+    [data-theme="dark"] .field-input:focus {
+      border-color: rgba(255,255,255,0.3);
+      background: #222226;
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+    }
+    [data-theme="dark"] .field-input::placeholder { color: #555; }
+
+    /* Swatches in dark */
+    [data-theme="dark"] .swatch.active {
+      border-color: var(--text);
+      box-shadow: 0 0 0 2px #2a2a2e inset;
+    }
+
+    /* Sign-in banner */
+    [data-theme="dark"] .signin-banner {
+      background: #222226;
+    }
+    [data-theme="dark"] .signin-dismiss:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    /* User pill */
+    [data-theme="dark"] .user-pill {
+      background: rgba(255,255,255,0.08);
+    }
+    [data-theme="dark"] .btn-signout:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    /* View toggle */
+    [data-theme="dark"] .view-toggle {
+      background: rgba(255,255,255,0.08);
+    }
+    [data-theme="dark"] .view-toggle button.active {
+      background: rgba(255,255,255,0.14);
+      color: var(--text);
+      box-shadow: none;
+    }
+
+    /* Calendar */
+    [data-theme="dark"] .cal-day:hover {
+      background: rgba(255,255,255,0.03);
+    }
+    [data-theme="dark"] .cal-event-dot:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    /* Toast */
+    [data-theme="dark"] .toast {
+      background: #e8e6e1;
+      color: #1a1a1e;
+    }
+
+    /* Add card in dark */
+    [data-theme="dark"] .card-add {
+      border-color: rgba(255,255,255,0.14);
+    }
+    [data-theme="dark"] .card-add:hover {
+      border-color: rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* Dark mode toggle button */
+    .theme-toggle {
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .theme-toggle:hover {
+      background: rgba(128,128,128,0.12);
+      color: var(--text);
+    }
   </style>
 </head>
 <body>
@@ -839,6 +1011,7 @@
       <img class="user-avatar" id="user-avatar" alt="">
     </div>
     <button class="btn-signout" id="header-signout" onclick="signOut()" style="display:none">Sign out</button>
+    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">☀️</button>
   </div>
 </header>
 
@@ -1059,6 +1232,14 @@ function renderGrid() {
 
   // Also refresh calendar if it's the active view
   if (currentView === 'calendar') renderCalendar();
+}
+
+// ── Theme toggle ──────────────────────────────────────────────────────────
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('theme-toggle').textContent = isDark ? '☀️' : '🌙';
 }
 
 // ── Modal ──────────────────────────────────────────────────────────────────

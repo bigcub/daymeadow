@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>daymeadow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f3f0;
+      --surface: #ffffff;
+      --text: #28261f;
+      --text-mid: #5a574f;
+      --text-muted: #9b9890;
+      --border: rgba(0,0,0,0.07);
+      --border-mid: rgba(0,0,0,0.12);
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.04);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.07), 0 8px 24px rgba(0,0,0,0.06);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.10), 0 20px 48px rgba(0,0,0,0.08);
+      --radius: 18px;
+      --radius-sm: 10px;
+      --font-ui: 'DM Sans', system-ui, -apple-system, sans-serif;
+      --font-display: 'Lora', Georgia, 'Times New Roman', serif;
+    }
+
+    body {
+      font-family: var(--font-ui);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────── */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 64px;
+      background: rgba(245, 243, 240, 0.88);
+      backdrop-filter: blur(16px) saturate(1.4);
+      -webkit-backdrop-filter: blur(16px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      text-decoration: none;
+      user-select: none;
+    }
+
+    .logo-dot { color: var(--text-muted); }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── Buttons ─────────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-ui);
+      font-size: 0.865rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: none;
+      white-space: nowrap;
+      text-decoration: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .btn-primary {
+      background: var(--text);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: #111;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.22);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active { transform: translateY(0); box-shadow: none; }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-mid);
+      border: 1px solid var(--border-mid);
+    }
+    .btn-outline:hover {
+      background: white;
+      color: var(--text);
+      border-color: rgba(0,0,0,0.18);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      padding: 8px 12px;
+    }
+    .btn-ghost:hover {
+      background: rgba(0,0,0,0.05);
+      color: var(--text-mid);
+    }
+
+    .btn-danger {
+      background: #fff0f0;
+      color: #c0392b;
+      border: 1px solid rgba(192,57,43,0.15);
+    }
+    .btn-danger:hover { background: #ffe5e5; }
+
+    .btn-icon {
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.0);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.1s;
+    }
+    .btn-icon:hover { background: rgba(0,0,0,0.07); color: var(--text); }
+
+    /* ── Grid ─────────────────────────────────────────────────────────── */
+    .main {
+      padding: 36px 40px 80px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+      gap: 18px;
+    }
+
+    /* ── Card base ───────────────────────────────────────────────────── */
+    .card {
+      border-radius: var(--radius);
+      padding: 26px 28px 22px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      min-height: 198px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:not(.card-add):hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Card glow circle */
+    .card::after {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      pointer-events: none;
+    }
+
+    /* ── Today card ──────────────────────────────────────────────────── */
+    .card-today {
+      background: var(--surface);
+      justify-content: space-between;
+    }
+
+    .today-eyebrow {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    .today-date {
+      font-family: var(--font-display);
+      font-size: 1.65rem;
+      font-weight: 600;
+      line-height: 1.15;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .today-weekday {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .today-footer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: auto;
+      padding-top: 16px;
+    }
+
+    .tz-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #5ac47a;
+      flex-shrink: 0;
+    }
+
+    .tz-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Event card colours ──────────────────────────────────────────── */
+    .cc-cream    { background: #fffaf3; }
+    .cc-sage     { background: #eff5ee; }
+    .cc-sky      { background: #eef4fc; }
+    .cc-rose     { background: #fdf0f4; }
+    .cc-lavender { background: #f2f0fb; }
+    .cc-amber    { background: #fdf6e3; }
+    .cc-slate    { background: #f0f2f6; }
+    .cc-mint     { background: #edf8f5; }
+
+    /* ── Event card internals ────────────────────────────────────────── */
+    .card-eyebrow {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .card-mid {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+      gap: 9px;
+      justify-content: flex-start;
+      padding: 4px 0;
+      flex-wrap: wrap;
+    }
+
+    .countdown-num {
+      font-family: var(--font-display);
+      font-size: 3.6rem;
+      line-height: 1;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.03em;
+      margin-left: -2px;
+      flex-shrink: 0;
+    }
+
+    .countdown-unit {
+      font-size: 1.05rem;
+      color: var(--text-mid);
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+
+    .card-bottom {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(0,0,0,0.07);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .card-title-text {
+      font-size: 0.93rem;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.35;
+    }
+
+    .card-controls {
+      display: flex;
+      gap: 2px;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      flex-shrink: 0;
+    }
+    .card:hover .card-controls { opacity: 1; }
+
+    /* ── Add card ─────────────────────────────────────────────────────── */
+    .card-add {
+      background: transparent;
+      border: 2px dashed var(--border-mid);
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 10px;
+      color: var(--text-muted);
+      cursor: pointer;
+      min-height: 198px;
+      transition: all 0.15s ease;
+    }
+    .card-add:hover {
+      border-color: rgba(0,0,0,0.22);
+      background: rgba(255,255,255,0.55);
+      color: var(--text-mid);
+      transform: translateY(-2px);
+    }
+    .card-add:hover .add-icon { opacity: 0.55; }
+    .add-icon {
+      font-size: 1.6rem;
+      opacity: 0.3;
+      transition: opacity 0.15s;
+      line-height: 1;
+    }
+    .add-label {
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Modal ──────────────────────────────────────────────────────────── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 18, 14, 0.40);
+      backdrop-filter: blur(6px) saturate(0.9);
+      -webkit-backdrop-filter: blur(6px) saturate(0.9);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 22px;
+      padding: 36px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(10px) scale(0.975);
+      transition: transform 0.22s cubic-bezier(0.34, 1.3, 0.64, 1);
+    }
+    .overlay.open .modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* ── Form ──────────────────────────────────────────────────────────── */
+    .field {
+      margin-bottom: 20px;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .field-label .opt {
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: none;
+      font-size: 0.7rem;
+      color: #c0bdb9;
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #e6e3de;
+      border-radius: 10px;
+      font-family: var(--font-ui);
+      font-size: 0.93rem;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    }
+    .field-input:focus {
+      border-color: #9a9690;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
+    }
+    .field-input::placeholder { color: #c5c2bd; }
+
+    /* Date input fix */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      opacity: 0.4;
+      cursor: pointer;
+    }
+
+    /* ── Colour picker ──────────────────────────────────────────────────── */
+    .swatches {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .swatch {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+      position: relative;
+    }
+    .swatch:hover { transform: scale(1.12); }
+    .swatch.active {
+      border-color: var(--text);
+      transform: scale(1.12);
+      box-shadow: 0 0 0 2px white inset;
+    }
+
+    /* ── Modal actions ──────────────────────────────────────────────────── */
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 28px;
+    }
+    .modal-actions .btn { flex: 1; padding: 11px 16px; font-size: 0.9rem; }
+
+    /* ── Confirm dialog ─────────────────────────────────────────────────── */
+    .confirm-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(20,18,14,0.35);
+      backdrop-filter: blur(4px);
+      z-index: 150;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s;
+    }
+    .confirm-overlay.open { opacity: 1; pointer-events: auto; }
+    .confirm-box {
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      max-width: 320px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+      transform: scale(0.95);
+      transition: transform 0.18s cubic-bezier(0.34, 1.3, 0.64, 1);
+    }
+    .confirm-overlay.open .confirm-box { transform: scale(1); }
+    .confirm-title { font-weight: 600; font-size: 1rem; margin-bottom: 8px; }
+    .confirm-body { font-size: 0.88rem; color: var(--text-mid); margin-bottom: 22px; }
+    .confirm-actions { display: flex; gap: 8px; }
+    .confirm-actions .btn { flex: 1; }
+
+    /* ── Empty state ───────────────────────────────────────────────────── */
+    .empty-hint {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    /* ── Toast ─────────────────────────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: var(--text);
+      color: white;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 40px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 200;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── Sign-in banner ──────────────────────────────────────────────── */
+    .signin-banner {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.83rem;
+      color: var(--text-mid);
+    }
+    .signin-banner strong { color: var(--text); }
+    .signin-dismiss {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 1rem;
+      padding: 2px 6px;
+      border-radius: 6px;
+      transition: background 0.1s;
+    }
+    .signin-dismiss:hover { background: rgba(0,0,0,0.05); }
+
+    /* ── User avatar ──────────────────────────────────────────────── */
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 4px 4px 12px;
+      border-radius: 40px;
+      background: rgba(0,0,0,0.04);
+      font-size: 0.82rem;
+      color: var(--text-mid);
+      font-weight: 500;
+    }
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .user-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .btn-signout {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-family: var(--font-ui);
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: background 0.1s, color 0.1s;
+    }
+    .btn-signout:hover { background: rgba(0,0,0,0.06); color: var(--text-mid); }
+
+    /* ── Responsive ─────────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .header { padding: 0 20px; }
+      .main { padding: 24px 16px 60px; }
+      .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .card { padding: 20px 20px 18px; min-height: 178px; }
+      .countdown-num { font-size: 2.9rem; }
+      .today-date { font-size: 1.35rem; }
+      .modal { padding: 28px 24px; }
+    }
+    @media (max-width: 380px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sign-in nudge (shown only when signed out) -->
+<div class="signin-banner" id="signin-banner" style="display:none">
+  <span><strong>Sign in</strong> to save your events across devices.</span>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button class="btn btn-outline" style="padding:6px 14px;font-size:0.8rem" onclick="signInWithGoogle()">Sign in with Google</button>
+    <button class="signin-dismiss" onclick="dismissBanner()">&#x2715;</button>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="header">
+  <a href="#" class="logo">daymeadow<span class="logo-dot">.</span></a>
+  <div class="header-right">
+    <button class="btn btn-outline" onclick="openModal()">+ New event</button>
+    <!-- Signed-out: show sign-in button -->
+    <button class="btn btn-ghost" id="header-signin" onclick="signInWithGoogle()" style="display:none">Sign in</button>
+    <!-- Signed-in: show user pill -->
+    <div class="user-pill" id="header-user" style="display:none">
+      <span class="user-name" id="user-name"></span>
+      <img class="user-avatar" id="user-avatar" alt="">
+    </div>
+    <button class="btn-signout" id="header-signout" onclick="signOut()" style="display:none">Sign out</button>
+  </div>
+</header>
+
+<!-- Grid -->
+<main class="main">
+  <div class="grid" id="grid">
+
+    <!-- Today card (static) -->
+    <div class="card card-today">
+      <div class="today-eyebrow">Today</div>
+      <div>
+        <div class="today-date" id="today-date">—</div>
+        <div class="today-weekday" id="today-weekday">—</div>
+      </div>
+      <div class="today-footer">
+        <div class="tz-dot"></div>
+        <div class="tz-label" id="today-tz">—</div>
+      </div>
+    </div>
+
+    <!-- Event cards injected here by JS -->
+
+  </div>
+</main>
+
+<!-- Add / Edit Modal -->
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">New event</div>
+      <button class="btn-icon" onclick="closeModal()" aria-label="Close">✕</button>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="inp-title">Name <span class="opt">— optional</span></label>
+      <input class="field-input" id="inp-title" type="text" placeholder="e.g. Summer holiday" autocomplete="off" maxlength="60">
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="inp-date">Date</label>
+      <input class="field-input" id="inp-date" type="date">
+    </div>
+
+    <div class="field">
+      <label class="field-label">Card colour</label>
+      <div class="swatches" id="swatches">
+        <div class="swatch" data-cc="cc-cream"    style="background:#fffaf3" onclick="pickColor(this)"></div>
+        <div class="swatch" data-cc="cc-sage"     style="background:#eff5ee" onclick="pickColor(this)"></div>
+        <div class="swatch" data-cc="cc-sky"      style="background:#eef4fc" onclick="pickColor(this)"></div>
+        <div class="swatch" data-cc="cc-rose"     style="background:#fdf0f4" onclick="pickColor(this)"></div>
+        <div class="swatch" data-cc="cc-lavender" style="background:#f2f0fb" onclick="pickColor(this)"></div>
+        <div class="swatch" data-cc="cc-amber"    style="background:#fdf6e3" onclick="pickColor(this)"></div>
+        <div class="swatch" data-cc="cc-slate"    style="background:#f0f2f6" onclick="pickColor(this)"></div>
+        <div class="swatch" data-cc="cc-mint"     style="background:#edf8f5" onclick="pickColor(this)"></div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEvent()">Save event</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete confirm -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-title">Remove this event?</div>
+    <div class="confirm-body">This can't be undone.</div>
+    <div class="confirm-actions">
+      <button class="btn btn-outline" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Remove</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Helpers ────────────────────────────────────────────────────────────────
+const MONTHS  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const WEEKDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+function ordinal(n) {
+  const s = ['th','st','nd','rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+function fmtDate(dateStr) {
+  // Parse as local date
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return `${MONTHS[m-1]} ${ordinal(d)}, ${y}`;
+}
+
+function daysDiff(dateStr) {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const target = new Date(y, m - 1, d);
+  return Math.round((target - now) / 86_400_000);
+}
+
+function buildCountdown(dateStr) {
+  const diff = daysDiff(dateStr);
+  if (diff < 0) {
+    const n = Math.abs(diff);
+    return { num: n, unit: n === 1 ? 'day ago' : 'days ago' };
+  }
+  if (diff === 0) {
+    return { num: '—', unit: 'today' };
+  }
+  if (diff <= 14) {
+    return { num: diff, unit: diff === 1 ? 'day' : 'days' };
+  }
+  if (diff <= 89) {
+    const w = Math.floor(diff / 7), r = diff % 7;
+    if (r === 0) return { num: w, unit: w === 1 ? 'week' : 'weeks' };
+    return { num: w, unit: `${w === 1 ? 'week' : 'weeks'} + ${r} ${r === 1 ? 'day' : 'days'}` };
+  }
+  if (diff < 365) {
+    const mo = Math.round(diff / 30.44);
+    return { num: mo, unit: mo === 1 ? 'month' : 'months' };
+  }
+  const yr = (diff / 365.25).toFixed(1);
+  return { num: yr, unit: +yr === 1 ? 'year' : 'years' };
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── State ──────────────────────────────────────────────────────────────────
+let events = [
+  { id: 1, title: 'Summer holiday',    date: '2026-07-12', color: 'cc-sky' },
+  { id: 2, title: "Mum's birthday",    date: '2026-03-28', color: 'cc-rose' },
+  { id: 3, title: 'Christmas',         date: '2026-12-25', color: 'cc-amber' },
+  { id: 4, title: 'Half marathon',     date: '2026-05-10', color: 'cc-sage' },
+  { id: 5, title: "New Year's Eve",    date: '2026-12-31', color: 'cc-lavender' },
+  { id: 6, title: 'Project deadline',  date: '2026-03-20', color: 'cc-cream' },
+];
+let nextId = 7;
+let editingId = null;
+let selectedColor = 'cc-cream';
+let pendingDeleteId = null;
+
+// ── Today card ─────────────────────────────────────────────────────────────
+function renderToday() {
+  const now = new Date();
+  const month = MONTHS[now.getMonth()];
+  const day   = ordinal(now.getDate());
+  const year  = now.getFullYear();
+  const wday  = WEEKDAYS[now.getDay()];
+  const tz    = Intl.DateTimeFormat().resolvedOptions().timeZone.replace(/_/g, ' ');
+
+  document.getElementById('today-date').textContent    = `${month} ${day}`;
+  document.getElementById('today-weekday').textContent = `${wday}, ${year}`;
+  document.getElementById('today-tz').textContent      = tz;
+}
+
+// ── Render grid ────────────────────────────────────────────────────────────
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  // Remove old event cards + add-card
+  grid.querySelectorAll('.ev-card, .card-add').forEach(el => el.remove());
+
+  const sorted = [...events].sort((a, b) => {
+    // Sort by days remaining (closest first), past events at the end
+    const da = daysDiff(a.date), db = daysDiff(b.date);
+    if (da >= 0 && db >= 0) return da - db;
+    if (da < 0  && db < 0)  return db - da;   // most recent past first
+    return da >= 0 ? -1 : 1;                  // future before past
+  });
+
+  sorted.forEach(ev => {
+    const cd    = buildCountdown(ev.date);
+    const title = ev.title || fmtDate(ev.date);
+    const card  = document.createElement('div');
+    card.className = `card ev-card ${ev.color}`;
+    card.dataset.id = ev.id;
+    card.innerHTML = `
+      <div class="card-eyebrow">${esc(fmtDate(ev.date))}</div>
+      <div class="card-mid">
+        <div class="countdown-num">${esc(String(cd.num))}</div>
+        <div class="countdown-unit">${esc(cd.unit)}</div>
+      </div>
+      <div class="card-bottom">
+        <div class="card-title-text">${esc(title)}</div>
+        <div class="card-controls">
+          <button class="btn-icon" onclick="editEvent(${ev.id})" title="Edit" aria-label="Edit event">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2L12 4.5 4.5 12H2V9.5L9.5 2Z"/></svg>
+          </button>
+          <button class="btn-icon" onclick="askDelete(${ev.id})" title="Delete" aria-label="Delete event">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><line x1="1" y1="1" x2="11" y2="11"/><line x1="11" y1="1" x2="1" y2="11"/></svg>
+          </button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // Add-card
+  const addCard = document.createElement('div');
+  addCard.className = 'card card-add';
+  addCard.setAttribute('role', 'button');
+  addCard.setAttribute('tabindex', '0');
+  addCard.setAttribute('aria-label', 'Add new event');
+  addCard.onclick = () => openModal();
+  addCard.onkeydown = e => { if (e.key === 'Enter') openModal(); };
+  addCard.innerHTML = `<div class="add-icon">+</div><div class="add-label">New event</div>`;
+  grid.appendChild(addCard);
+}
+
+// ── Modal ──────────────────────────────────────────────────────────────────
+function openModal(id = null) {
+  editingId = id;
+  document.getElementById('modal-title').textContent = id ? 'Edit event' : 'New event';
+
+  if (id) {
+    const ev = events.find(e => e.id === id);
+    document.getElementById('inp-title').value = ev.title;
+    document.getElementById('inp-date').value  = ev.date;
+    setColor(ev.color);
+  } else {
+    document.getElementById('inp-title').value = '';
+    document.getElementById('inp-date').value  = '';
+    setColor('cc-cream');
+  }
+
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(() => {
+    const inp = document.getElementById('inp-title');
+    inp.focus();
+  }, 80);
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+  editingId = null;
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('overlay')) closeModal();
+}
+
+function setColor(cc) {
+  selectedColor = cc;
+  document.querySelectorAll('.swatch').forEach(s => {
+    s.classList.toggle('active', s.dataset.cc === cc);
+  });
+}
+
+function pickColor(el) {
+  setColor(el.dataset.cc);
+}
+
+function saveEvent() {
+  const title = document.getElementById('inp-title').value.trim();
+  const date  = document.getElementById('inp-date').value;
+
+  if (!date) {
+    document.getElementById('inp-date').focus();
+    document.getElementById('inp-date').style.borderColor = '#e06060';
+    setTimeout(() => document.getElementById('inp-date').style.borderColor = '', 1400);
+    return;
+  }
+
+  if (editingId) {
+    const ev = events.find(e => e.id === editingId);
+    ev.title = title;
+    ev.date  = date;
+    ev.color = selectedColor;
+    showToast('Event updated');
+  } else {
+    events.push({ id: nextId++, title, date, color: selectedColor });
+    showToast('Event added');
+  }
+
+  closeModal();
+  renderGrid();
+}
+
+function editEvent(id) {
+  // Prevent click propagation from card controls
+  openModal(id);
+}
+
+// ── Delete confirm ─────────────────────────────────────────────────────────
+function askDelete(id) {
+  pendingDeleteId = id;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+
+function closeConfirm() {
+  pendingDeleteId = null;
+  document.getElementById('confirm-overlay').classList.remove('open');
+}
+
+function confirmDelete() {
+  if (pendingDeleteId !== null) {
+    events = events.filter(e => e.id !== pendingDeleteId);
+    closeConfirm();
+    renderGrid();
+    showToast('Event removed');
+  }
+}
+
+// Click outside confirm box closes it
+document.getElementById('confirm-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('confirm-overlay')) closeConfirm();
+});
+
+// ── Toast ──────────────────────────────────────────────────────────────────
+let toastTimer = null;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ── Keyboard shortcuts ─────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeModal();
+    closeConfirm();
+  }
+  if ((e.key === 'n' || e.key === 'N') && !e.metaKey && !e.ctrlKey) {
+    const active = document.activeElement;
+    if (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA') return;
+    openModal();
+  }
+});
+
+// ── Init ───────────────────────────────────────────────────────────────────
+renderToday();
+renderGrid();
+
+// Refresh today card at midnight
+function scheduleRefresh() {
+  const now = new Date();
+  const ms  = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) - now;
+  setTimeout(() => { renderToday(); renderGrid(); scheduleRefresh(); }, ms);
+}
+scheduleRefresh();
+</script>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js';
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBDA_fUZyx0oC5ZKpNJ3ZThOSXQImnhvOk",
+    authDomain: "daymeadow-55cc0.firebaseapp.com",
+    projectId: "daymeadow-55cc0",
+    storageBucket: "daymeadow-55cc0.firebasestorage.app",
+    messagingSenderId: "991701305214",
+    appId: "1:991701305214:web:7ab2de77a683c41fea552f",
+    measurementId: "G-6XFMKDNW2Z"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // Expose to global scope for onclick handlers
+  window.signInWithGoogle = async function() {
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (err) {
+      if (err.code !== 'auth/popup-closed-by-user') {
+        console.error('Sign-in error:', err);
+        showToast('Sign-in failed. Please try again.');
+      }
+    }
+  };
+
+  window.signOut = async function() {
+    try {
+      await fbSignOut(auth);
+      showToast('Signed out');
+    } catch (err) {
+      console.error('Sign-out error:', err);
+    }
+  };
+
+  let bannerDismissed = false;
+  window.dismissBanner = function() {
+    bannerDismissed = true;
+    document.getElementById('signin-banner').style.display = 'none';
+  };
+
+  // Auth state listener
+  onAuthStateChanged(auth, (user) => {
+    const banner    = document.getElementById('signin-banner');
+    const headerBtn = document.getElementById('header-signin');
+    const userPill  = document.getElementById('header-user');
+    const signoutBtn = document.getElementById('header-signout');
+    const userName  = document.getElementById('user-name');
+    const userAvatar = document.getElementById('user-avatar');
+
+    if (user) {
+      // Signed in
+      banner.style.display = 'none';
+      headerBtn.style.display = 'none';
+      userPill.style.display = 'flex';
+      signoutBtn.style.display = '';
+      userName.textContent = user.displayName || user.email;
+      userAvatar.src = user.photoURL || '';
+      userAvatar.style.display = user.photoURL ? '' : 'none';
+    } else {
+      // Signed out
+      if (!bannerDismissed) banner.style.display = '';
+      headerBtn.style.display = '';
+      userPill.style.display = 'none';
+      signoutBtn.style.display = 'none';
+    }
+  });
+</script>
+</body>
+</html>

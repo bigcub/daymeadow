@@ -63,6 +63,12 @@
 
     .logo-dot { color: var(--text-muted); }
 
+    .header-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
     .header-right {
       display: flex;
       align-items: center;
@@ -597,15 +603,200 @@
     }
     .btn-signout:hover { background: rgba(0,0,0,0.06); color: var(--text-mid); }
 
+    /* ── View toggle ───────────────────────────────────────────────── */
+    .view-toggle {
+      display: flex;
+      background: rgba(0,0,0,0.05);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .view-toggle button {
+      font-family: var(--font-ui);
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 5px 14px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .view-toggle button:hover { color: var(--text-mid); }
+    .view-toggle button.active {
+      background: white;
+      color: var(--text);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    /* ── Calendar view ─────────────────────────────────────────────── */
+    .calendar-view { display: none; max-width: 720px; margin: 0 auto; }
+    .calendar-view.active { display: block; }
+    .meadow-view.active { display: block; }
+    .meadow-view { display: none; }
+
+    .cal-month {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .cal-month-header {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 20px;
+      letter-spacing: -0.01em;
+    }
+
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0;
+      margin-bottom: 6px;
+    }
+
+    .cal-weekday-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 4px 0;
+    }
+
+    .cal-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0;
+      border-left: 1px solid var(--border);
+      border-top: 1px solid var(--border);
+    }
+
+    .cal-day {
+      position: relative;
+      aspect-ratio: 1;
+      padding: 6px 7px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      cursor: default;
+      transition: background 0.1s;
+      overflow: hidden;
+    }
+
+    .cal-day:hover { background: rgba(0,0,0,0.015); }
+    .cal-day.cal-day-empty:hover { background: transparent; }
+
+    .cal-day-num {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-mid);
+      margin-bottom: 4px;
+    }
+
+    .cal-day.cal-past .cal-day-num { color: var(--text-muted); opacity: 0.5; }
+    .cal-day.cal-past { opacity: 0.6; }
+
+    .cal-day.cal-today .cal-day-num {
+      background: var(--text);
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .cal-event-dot {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 0;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.1s;
+    }
+    .cal-event-dot:hover { background: rgba(0,0,0,0.05); }
+
+    .cal-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .cal-event-title {
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--text-mid);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+
+    /* Dot colours matching card colours */
+    .cal-dot-cream    { background: #e8d5b8; }
+    .cal-dot-sage     { background: #8bb87e; }
+    .cal-dot-sky      { background: #7aabe0; }
+    .cal-dot-rose     { background: #d98aa0; }
+    .cal-dot-lavender { background: #9b8ec4; }
+    .cal-dot-amber    { background: #d4a843; }
+    .cal-dot-slate    { background: #8a90a0; }
+    .cal-dot-mint     { background: #5db89e; }
+
+    /* Calendar hover tooltip */
+    .cal-tooltip {
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.12s;
+      z-index: 10;
+    }
+    .cal-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 4px solid transparent;
+      border-top-color: var(--text);
+    }
+    .cal-event-dot:hover .cal-tooltip { opacity: 1; }
+
     /* ── Responsive ─────────────────────────────────────────────────── */
     @media (max-width: 640px) {
       .header { padding: 0 20px; }
+      .header-center { position: static; transform: none; }
       .main { padding: 24px 16px 60px; }
       .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
       .card { padding: 20px 20px 18px; min-height: 178px; }
       .countdown-num { font-size: 2.9rem; }
       .today-date { font-size: 1.35rem; }
       .modal { padding: 28px 24px; }
+      .cal-month { padding: 16px; }
+      .cal-day { padding: 4px 3px; }
+      .cal-event-title { display: none; }
+      .cal-dot { width: 6px; height: 6px; }
     }
     @media (max-width: 380px) {
       .grid { grid-template-columns: 1fr; }
@@ -626,6 +817,12 @@
 <!-- Header -->
 <header class="header">
   <a href="#" class="logo">daymeadow<span class="logo-dot">.</span></a>
+  <div class="header-center">
+    <div class="view-toggle" id="view-toggle">
+      <button class="active" data-view="meadow" onclick="switchView('meadow')">Meadow</button>
+      <button data-view="calendar" onclick="switchView('calendar')">Calendar</button>
+    </div>
+  </div>
   <div class="header-right">
     <button class="btn btn-outline" onclick="openModal()">+ New event</button>
     <!-- Signed-out: show sign-in button -->
@@ -639,26 +836,29 @@
   </div>
 </header>
 
-<!-- Grid -->
+<!-- Main content -->
 <main class="main">
-  <div class="grid" id="grid">
-
-    <!-- Today card (static) -->
-    <div class="card card-today">
-      <div class="today-eyebrow">Today</div>
-      <div>
-        <div class="today-date" id="today-date">—</div>
-        <div class="today-weekday" id="today-weekday">—</div>
+  <!-- Meadow view (cards) -->
+  <div class="meadow-view active" id="meadow-view">
+    <div class="grid" id="grid">
+      <!-- Today card (static) -->
+      <div class="card card-today">
+        <div class="today-eyebrow">Today</div>
+        <div>
+          <div class="today-date" id="today-date">—</div>
+          <div class="today-weekday" id="today-weekday">—</div>
+        </div>
+        <div class="today-footer">
+          <div class="tz-dot"></div>
+          <div class="tz-label" id="today-tz">—</div>
+        </div>
       </div>
-      <div class="today-footer">
-        <div class="tz-dot"></div>
-        <div class="tz-label" id="today-tz">—</div>
-      </div>
+      <!-- Event cards injected here by JS -->
     </div>
-
-    <!-- Event cards injected here by JS -->
-
   </div>
+
+  <!-- Calendar view -->
+  <div class="calendar-view" id="calendar-view"></div>
 </main>
 
 <!-- Add / Edit Modal -->
@@ -850,6 +1050,9 @@ function renderGrid() {
   addCard.onkeydown = e => { if (e.key === 'Enter') openModal(); };
   addCard.innerHTML = `<div class="add-icon">+</div><div class="add-label">New event</div>`;
   grid.appendChild(addCard);
+
+  // Also refresh calendar if it's the active view
+  if (currentView === 'calendar') renderCalendar();
 }
 
 // ── Modal ──────────────────────────────────────────────────────────────────
@@ -989,6 +1192,150 @@ function showToast(msg) {
   el.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ── View toggle ───────────────────────────────────────────────────────────
+let currentView = 'meadow';
+
+function switchView(view) {
+  currentView = view;
+  document.querySelectorAll('.view-toggle button').forEach(b => {
+    b.classList.toggle('active', b.dataset.view === view);
+  });
+  document.getElementById('meadow-view').classList.toggle('active', view === 'meadow');
+  document.getElementById('calendar-view').classList.toggle('active', view === 'calendar');
+  if (view === 'calendar') renderCalendar();
+}
+
+// ── Calendar rendering ────────────────────────────────────────────────────
+const DOT_CLASS_MAP = {
+  'cc-cream': 'cal-dot-cream',
+  'cc-sage': 'cal-dot-sage',
+  'cc-sky': 'cal-dot-sky',
+  'cc-rose': 'cal-dot-rose',
+  'cc-lavender': 'cal-dot-lavender',
+  'cc-amber': 'cal-dot-amber',
+  'cc-slate': 'cal-dot-slate',
+  'cc-mint': 'cal-dot-mint',
+};
+
+function renderCalendar() {
+  const container = document.getElementById('calendar-view');
+  container.innerHTML = '';
+
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+
+  // Build event lookup by date
+  const eventsByDate = {};
+  events.forEach(ev => {
+    if (!eventsByDate[ev.date]) eventsByDate[ev.date] = [];
+    eventsByDate[ev.date].push(ev);
+  });
+
+  // Determine month range: current month to last event month (min 3 months)
+  const startMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  let endMonth = new Date(now.getFullYear(), now.getMonth() + 3, 1);
+  events.forEach(ev => {
+    const [y, m] = ev.date.split('-').map(Number);
+    const evMonth = new Date(y, m - 1, 1);
+    if (evMonth > endMonth) endMonth = evMonth;
+  });
+
+  const cursor = new Date(startMonth);
+  const WDAY_LABELS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+  while (cursor <= endMonth) {
+    const year = cursor.getFullYear();
+    const month = cursor.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    // Monday-based: 0=Mon, 6=Sun
+    let firstDay = new Date(year, month, 1).getDay();
+    firstDay = (firstDay + 6) % 7; // shift so Mon=0
+
+    const monthEl = document.createElement('div');
+    monthEl.className = 'cal-month';
+
+    // Header
+    const headerEl = document.createElement('div');
+    headerEl.className = 'cal-month-header';
+    headerEl.textContent = `${MONTHS[month]} ${year}`;
+    monthEl.appendChild(headerEl);
+
+    // Weekday labels
+    const weekdaysEl = document.createElement('div');
+    weekdaysEl.className = 'cal-weekdays';
+    WDAY_LABELS.forEach(label => {
+      const wd = document.createElement('div');
+      wd.className = 'cal-weekday-label';
+      wd.textContent = label;
+      weekdaysEl.appendChild(wd);
+    });
+    monthEl.appendChild(weekdaysEl);
+
+    // Days grid
+    const daysEl = document.createElement('div');
+    daysEl.className = 'cal-days';
+
+    // Empty cells before first day
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement('div');
+      empty.className = 'cal-day cal-day-empty';
+      daysEl.appendChild(empty);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const dayEl = document.createElement('div');
+      dayEl.className = 'cal-day';
+
+      // Past / today / future
+      if (dateStr < todayStr) dayEl.classList.add('cal-past');
+      else if (dateStr === todayStr) dayEl.classList.add('cal-today');
+
+      // Day number
+      const numEl = document.createElement('div');
+      numEl.className = 'cal-day-num';
+      numEl.textContent = d;
+      dayEl.appendChild(numEl);
+
+      // Events on this day
+      const dayEvents = eventsByDate[dateStr];
+      if (dayEvents) {
+        dayEvents.forEach(ev => {
+          const dotWrap = document.createElement('div');
+          dotWrap.className = 'cal-event-dot';
+          dotWrap.onclick = (e) => { e.stopPropagation(); openModal(ev.id); };
+
+          const dot = document.createElement('div');
+          dot.className = `cal-dot ${DOT_CLASS_MAP[ev.color] || 'cal-dot-cream'}`;
+
+          const titleEl = document.createElement('div');
+          titleEl.className = 'cal-event-title';
+          titleEl.textContent = ev.title || fmtDate(ev.date);
+
+          // Countdown tooltip
+          const cd = buildCountdown(ev.date);
+          const tooltip = document.createElement('div');
+          tooltip.className = 'cal-tooltip';
+          tooltip.textContent = cd.num === '—' ? 'Today' : `${cd.num} ${cd.unit}`;
+
+          dotWrap.appendChild(dot);
+          dotWrap.appendChild(titleEl);
+          dotWrap.appendChild(tooltip);
+          dayEl.appendChild(dotWrap);
+        });
+      }
+
+      daysEl.appendChild(dayEl);
+    }
+
+    monthEl.appendChild(daysEl);
+    container.appendChild(monthEl);
+
+    // Next month
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
 }
 
 // ── Keyboard shortcuts ─────────────────────────────────────────────────────

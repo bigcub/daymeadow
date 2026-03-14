@@ -770,18 +770,20 @@ function esc(s) {
 }
 
 // ── State ──────────────────────────────────────────────────────────────────
-let events = [
-  { id: 1, title: 'Summer holiday',    date: '2026-07-12', color: 'cc-sky' },
-  { id: 2, title: "Mum's birthday",    date: '2026-03-28', color: 'cc-rose' },
-  { id: 3, title: 'Christmas',         date: '2026-12-25', color: 'cc-amber' },
-  { id: 4, title: 'Half marathon',     date: '2026-05-10', color: 'cc-sage' },
-  { id: 5, title: "New Year's Eve",    date: '2026-12-31', color: 'cc-lavender' },
-  { id: 6, title: 'Project deadline',  date: '2026-03-20', color: 'cc-cream' },
+const SAMPLE_EVENTS = [
+  { id: 's1', title: 'Summer holiday',    date: '2026-07-12', color: 'cc-sky' },
+  { id: 's2', title: "Mum's birthday",    date: '2026-03-28', color: 'cc-rose' },
+  { id: 's3', title: 'Christmas',         date: '2026-12-25', color: 'cc-amber' },
+  { id: 's4', title: 'Half marathon',     date: '2026-05-10', color: 'cc-sage' },
+  { id: 's5', title: "New Year's Eve",    date: '2026-12-31', color: 'cc-lavender' },
+  { id: 's6', title: 'Project deadline',  date: '2026-03-20', color: 'cc-cream' },
 ];
-let nextId = 7;
+let events = [];
 let editingId = null;
 let selectedColor = 'cc-cream';
 let pendingDeleteId = null;
+let currentUser = null;
+let authResolved = false;
 
 // ── Today card ─────────────────────────────────────────────────────────────
 function renderToday() {
@@ -826,10 +828,10 @@ function renderGrid() {
       <div class="card-bottom">
         <div class="card-title-text">${esc(title)}</div>
         <div class="card-controls">
-          <button class="btn-icon" onclick="editEvent(${ev.id})" title="Edit" aria-label="Edit event">
+          <button class="btn-icon" onclick="editEvent('${ev.id}')" title="Edit" aria-label="Edit event">
             <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2L12 4.5 4.5 12H2V9.5L9.5 2Z"/></svg>
           </button>
-          <button class="btn-icon" onclick="askDelete(${ev.id})" title="Delete" aria-label="Delete event">
+          <button class="btn-icon" onclick="askDelete('${ev.id}')" title="Delete" aria-label="Delete event">
             <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><line x1="1" y1="1" x2="11" y2="11"/><line x1="11" y1="1" x2="1" y2="11"/></svg>
           </button>
         </div>
@@ -893,7 +895,7 @@ function pickColor(el) {
   setColor(el.dataset.cc);
 }
 
-function saveEvent() {
+async function saveEvent() {
   const title = document.getElementById('inp-title').value.trim();
   const date  = document.getElementById('inp-date').value;
 
@@ -904,15 +906,35 @@ function saveEvent() {
     return;
   }
 
-  if (editingId) {
-    const ev = events.find(e => e.id === editingId);
-    ev.title = title;
-    ev.date  = date;
-    ev.color = selectedColor;
-    showToast('Event updated');
+  const data = { title, date, color: selectedColor };
+
+  if (currentUser && window._firestore) {
+    try {
+      if (editingId) {
+        await window._firestore.updateEvent(editingId, data);
+        const ev = events.find(e => e.id === editingId);
+        Object.assign(ev, data);
+        showToast('Event updated');
+      } else {
+        const id = await window._firestore.addEvent(data);
+        events.push({ id, ...data });
+        showToast('Event added');
+      }
+    } catch (err) {
+      console.error('Save error:', err);
+      showToast('Failed to save. Please try again.');
+      return;
+    }
   } else {
-    events.push({ id: nextId++, title, date, color: selectedColor });
-    showToast('Event added');
+    // Signed out — local only (sample mode)
+    if (editingId) {
+      const ev = events.find(e => e.id === editingId);
+      Object.assign(ev, data);
+      showToast('Event updated');
+    } else {
+      events.push({ id: 'local-' + Date.now(), ...data });
+      showToast('Event added');
+    }
   }
 
   closeModal();
@@ -935,8 +957,18 @@ function closeConfirm() {
   document.getElementById('confirm-overlay').classList.remove('open');
 }
 
-function confirmDelete() {
+async function confirmDelete() {
   if (pendingDeleteId !== null) {
+    if (currentUser && window._firestore) {
+      try {
+        await window._firestore.deleteEvent(pendingDeleteId);
+      } catch (err) {
+        console.error('Delete error:', err);
+        showToast('Failed to remove. Please try again.');
+        closeConfirm();
+        return;
+      }
+    }
     events = events.filter(e => e.id !== pendingDeleteId);
     closeConfirm();
     renderGrid();
@@ -974,7 +1006,7 @@ document.addEventListener('keydown', e => {
 
 // ── Init ───────────────────────────────────────────────────────────────────
 renderToday();
-renderGrid();
+// Grid rendering deferred until auth state resolves (avoids flash of sample events)
 
 // Refresh today card at midnight
 function scheduleRefresh() {
@@ -989,6 +1021,7 @@ scheduleRefresh();
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js';
   import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
+  import { initializeFirestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
 
   const firebaseConfig = {
     apiKey: "AIzaSyBDA_fUZyx0oC5ZKpNJ3ZThOSXQImnhvOk",
@@ -1002,9 +1035,40 @@ scheduleRefresh();
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
   const provider = new GoogleAuthProvider();
 
-  // Expose to global scope for onclick handlers
+  // ── Firestore helpers (exposed to global scope) ──────────────────────────
+  function userEventsCol(uid) {
+    return collection(db, 'users', uid, 'events');
+  }
+
+  window._firestore = {
+    async loadEvents(uid) {
+      const snap = await getDocs(userEventsCol(uid));
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    },
+    async addEvent(data) {
+      const ref = await addDoc(userEventsCol(currentUser.uid), {
+        title: data.title,
+        date: data.date,
+        color: data.color,
+      });
+      return ref.id;
+    },
+    async updateEvent(id, data) {
+      await updateDoc(doc(db, 'users', currentUser.uid, 'events', id), {
+        title: data.title,
+        date: data.date,
+        color: data.color,
+      });
+    },
+    async deleteEvent(id) {
+      await deleteDoc(doc(db, 'users', currentUser.uid, 'events', id));
+    },
+  };
+
+  // ── Auth ─────────────────────────────────────────────────────────────────
   window.signInWithGoogle = async function() {
     try {
       await signInWithPopup(auth, provider);
@@ -1031,8 +1095,8 @@ scheduleRefresh();
     document.getElementById('signin-banner').style.display = 'none';
   };
 
-  // Auth state listener
-  onAuthStateChanged(auth, (user) => {
+  // ── Auth state listener ──────────────────────────────────────────────────
+  onAuthStateChanged(auth, async (user) => {
     const banner    = document.getElementById('signin-banner');
     const headerBtn = document.getElementById('header-signin');
     const userPill  = document.getElementById('header-user');
@@ -1042,6 +1106,7 @@ scheduleRefresh();
 
     if (user) {
       // Signed in
+      currentUser = user;
       banner.style.display = 'none';
       headerBtn.style.display = 'none';
       userPill.style.display = 'flex';
@@ -1049,8 +1114,20 @@ scheduleRefresh();
       userName.textContent = user.displayName || user.email;
       userAvatar.src = user.photoURL || '';
       userAvatar.style.display = user.photoURL ? '' : 'none';
+
+      // Load events from Firestore
+      try {
+        events = await window._firestore.loadEvents(user.uid);
+        renderGrid();
+      } catch (err) {
+        console.error('Failed to load events:', err);
+        showToast('Could not load your events.');
+      }
     } else {
-      // Signed out
+      // Signed out — show sample events
+      currentUser = null;
+      events = [...SAMPLE_EVENTS];
+      renderGrid();
       if (!bannerDismissed) banner.style.display = '';
       headerBtn.style.display = '';
       userPill.style.display = 'none';

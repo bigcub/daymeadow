@@ -1,4 +1,9 @@
 {
+  "emulators": {
+    "hosting": {
+      "port": 5002
+    }
+  },
   "firestore": {
     "rules": "firestore.rules"
   },

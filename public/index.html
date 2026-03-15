@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>daymeadow</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png">
-  <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png">
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
   <meta name="theme-color" content="#f5f3f0">
@@ -80,6 +79,8 @@
       align-items: center;
       gap: 8px;
     }
+
+    .show-mobile { display: none; }
 
     /* ── Buttons ─────────────────────────────────────────────────────── */
     .btn {
@@ -791,8 +792,16 @@
 
     /* ── Responsive ─────────────────────────────────────────────────── */
     @media (max-width: 640px) {
-      .header { padding: 0 20px; }
+      .header { padding: 0 12px; height: 48px; }
       .header-center { position: static; transform: none; }
+      .logo { font-size: 1rem; }
+      .view-toggle button { padding: 5px 10px; font-size: 0.75rem; }
+      .header-right { gap: 4px; }
+      .header-right .btn { padding: 5px 10px; font-size: 0.8rem; }
+      #header-signin { display: none !important; }
+      .hide-mobile { display: none; }
+      .show-mobile { display: inline; }
+      .theme-toggle { font-size: 1rem; padding: 4px; }
       .main { padding: 24px 16px 60px; }
       .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
       .card { padding: 20px 20px 18px; min-height: 178px; }
@@ -1002,7 +1011,7 @@
     </div>
   </div>
   <div class="header-right">
-    <button class="btn btn-outline" onclick="openModal()">+ New event</button>
+    <button class="btn btn-outline" onclick="openModal()"><span class="hide-mobile">+ New event</span><span class="show-mobile">+</span></button>
     <!-- Signed-out: show sign-in button -->
     <button class="btn btn-ghost" id="header-signin" onclick="signInWithGoogle()" style="display:none">Sign in</button>
     <!-- Signed-in: show user pill -->
@@ -1235,6 +1244,15 @@ function renderGrid() {
 }
 
 // ── Theme toggle ──────────────────────────────────────────────────────────
+(function restoreTheme() {
+  const saved = localStorage.getItem('theme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.textContent = saved === 'dark' ? '🌙' : '☀️';
+  }
+})();
+
 function toggleTheme() {
   const html = document.documentElement;
   const isDark = html.getAttribute('data-theme') === 'dark';

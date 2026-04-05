@@ -1586,6 +1586,7 @@ scheduleRefresh();
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js';
   import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
   import { initializeFirestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
+  import { getAnalytics } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-analytics.js';
 
   const firebaseConfig = {
     apiKey: "AIzaSyBDA_fUZyx0oC5ZKpNJ3ZThOSXQImnhvOk",
@@ -1598,6 +1599,7 @@ scheduleRefresh();
   };
 
   const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
   const auth = getAuth(app);
   const db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
   const provider = new GoogleAuthProvider();

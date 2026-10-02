@@ -1,5 +1,7 @@
 import { MONTHS, WEEKDAYS, ordinal, fmtDate, toISODate, addDays, buildCountdown, sortEvents } from './dates.js';
 import * as fb from './firebase.js';
+import { sampleEvents } from './samples.js';
+import { addTag, removeTag, eventTags, collectTags, filterByTag } from './tags.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -11,27 +13,11 @@ let editingId = null;
 let selectedColor = 'cc-cream';
 let pendingDeleteId = null;
 let currentUser = null;
-let currentView = 'meadow';
+let currentView = 'board';
 let unwatchEvents = null;
 let bannerDismissed = false;
-
-// Shown while signed out; dated relative to today so they never go stale.
-function sampleEvents(now = new Date()) {
-  const inDays = (n) => toISODate(addDays(now, n));
-  const nextAnnual = (month, day) => {
-    const thisYear = new Date(now.getFullYear(), month - 1, day);
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    return toISODate(thisYear >= today ? thisYear : new Date(now.getFullYear() + 1, month - 1, day));
-  };
-  return [
-    { id: 's1', title: 'Project deadline', date: inDays(6), color: 'cc-cream' },
-    { id: 's2', title: "Mum's birthday", date: inDays(19), color: 'cc-rose' },
-    { id: 's3', title: 'Half marathon', date: inDays(52), color: 'cc-sage' },
-    { id: 's4', title: 'Summer holiday', date: inDays(130), color: 'cc-sky' },
-    { id: 's5', title: 'Christmas', date: nextAnnual(12, 25), color: 'cc-amber' },
-    { id: 's6', title: "New Year's Eve", date: nextAnnual(12, 31), color: 'cc-lavender' },
-  ];
-}
+let activeTag = null;
+let draftTags = [];
 
 function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -49,11 +35,24 @@ function renderToday() {
 const EDIT_ICON = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 2L12 4.5 4.5 12H2V9.5L9.5 2Z"/></svg>`;
 const DELETE_ICON = `<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><line x1="1" y1="1" x2="11" y2="11"/><line x1="11" y1="1" x2="1" y2="11"/></svg>`;
 
+function visibleEvents() {
+  return filterByTag(events, activeTag);
+}
+
+function tagPills(tags) {
+  if (!tags.length) return '';
+  const pills = tags
+    .map((t) => `<button class="tag" data-action="filter-tag" data-tag="${esc(t)}">${esc(t)}</button>`)
+    .join('');
+  return `<div class="card-tags">${pills}</div>`;
+}
+
 function renderGrid() {
+  renderTagFilter();
   const grid = $('grid');
   grid.querySelectorAll('.ev-card, .card-add').forEach((el) => el.remove());
 
-  for (const ev of sortEvents(events)) {
+  for (const ev of sortEvents(visibleEvents())) {
     const cd = buildCountdown(ev.date);
     const color = COLORS.includes(ev.color) ? ev.color : 'cc-cream';
     const card = document.createElement('div');
@@ -66,7 +65,10 @@ function renderGrid() {
         <div class="countdown-unit">${esc(cd.unit)}</div>
       </div>
       <div class="card-bottom">
-        <div class="card-title-text">${esc(ev.title || fmtDate(ev.date))}</div>
+        <div class="card-text">
+          <div class="card-title-text">${esc(ev.title || fmtDate(ev.date))}</div>
+          ${tagPills(eventTags(ev))}
+        </div>
         <div class="card-controls">
           <button class="btn-icon" data-action="edit" title="Edit" aria-label="Edit event">${EDIT_ICON}</button>
           <button class="btn-icon" data-action="delete" title="Delete" aria-label="Delete event">${DELETE_ICON}</button>
@@ -84,6 +86,31 @@ function renderGrid() {
   grid.appendChild(addCard);
 
   if (currentView === 'calendar') renderCalendar();
+}
+
+// ── Tag filter ─────────────────────────────────────────────────────────────
+function renderTagFilter() {
+  const bar = $('tag-filter');
+  const tags = collectTags(events);
+  if (activeTag && !tags.includes(activeTag)) activeTag = null;
+  bar.hidden = tags.length === 0;
+
+  const button = (label, tag) => {
+    const b = document.createElement('button');
+    b.className = 'tag';
+    b.dataset.action = 'filter-tag';
+    b.dataset.tag = tag;
+    b.textContent = label;
+    b.setAttribute('aria-pressed', String(activeTag === (tag || null)));
+    return b;
+  };
+  bar.replaceChildren(button('All', ''), ...tags.map((t) => button(t, t)));
+}
+
+function setActiveTag(tag) {
+  // Clicking the active tag again clears the filter.
+  activeTag = tag && tag !== activeTag ? tag : null;
+  renderGrid();
 }
 
 function setEvents(next) {
@@ -117,6 +144,9 @@ function openModal(id = null) {
   $('inp-title').value = ev ? ev.title : '';
   $('inp-date').value = ev ? ev.date : '';
   setColor(ev ? ev.color : 'cc-cream');
+  draftTags = ev ? eventTags(ev) : [];
+  $('inp-tag').value = '';
+  renderDraftTags();
   $('overlay').classList.add('open');
   setTimeout(() => $('inp-title').focus(), 80);
 }
@@ -135,7 +165,34 @@ function setColor(cc) {
   });
 }
 
+function renderDraftTags() {
+  $('tag-chips').replaceChildren(
+    ...draftTags.map((t) => {
+      const chip = document.createElement('button');
+      chip.className = 'tag tag-chip';
+      chip.dataset.action = 'remove-tag';
+      chip.dataset.tag = t;
+      chip.setAttribute('aria-label', `Remove tag ${t}`);
+      chip.textContent = `${t} ×`;
+      return chip;
+    }),
+  );
+  $('tag-suggestions').replaceChildren(
+    ...collectTags(events)
+      .filter((t) => !draftTags.includes(t))
+      .map((t) => Object.assign(document.createElement('option'), { value: t })),
+  );
+}
+
+function commitTagInput() {
+  const input = $('inp-tag');
+  draftTags = addTag(draftTags, input.value);
+  input.value = '';
+  renderDraftTags();
+}
+
 async function saveEvent() {
+  commitTagInput();
   const title = $('inp-title').value.trim();
   const date = $('inp-date').value;
   const dateInput = $('inp-date');
@@ -147,7 +204,7 @@ async function saveEvent() {
     return;
   }
 
-  const data = { title, date, color: selectedColor };
+  const data = { title, date, color: selectedColor, tags: draftTags };
   const editing = editingId;
 
   if (currentUser) {
@@ -218,7 +275,7 @@ function switchView(view) {
     b.classList.toggle('active', active);
     b.setAttribute('aria-pressed', String(active));
   });
-  $('meadow-view').classList.toggle('active', view === 'meadow');
+  $('board-view').classList.toggle('active', view === 'board');
   $('calendar-view').classList.toggle('active', view === 'calendar');
   if (view === 'calendar') renderCalendar();
 }
@@ -240,8 +297,9 @@ function renderCalendar() {
   const now = new Date();
   const todayStr = toISODate(now);
 
+  const shown = visibleEvents();
   const eventsByDate = new Map();
-  for (const ev of events) {
+  for (const ev of shown) {
     if (!eventsByDate.has(ev.date)) eventsByDate.set(ev.date, []);
     eventsByDate.get(ev.date).push(ev);
   }
@@ -249,7 +307,7 @@ function renderCalendar() {
   // Current month through the last event's month (at least 4 months).
   const cursor = new Date(now.getFullYear(), now.getMonth(), 1);
   let endMonth = new Date(now.getFullYear(), now.getMonth() + 3, 1);
-  for (const ev of events) {
+  for (const ev of shown) {
     const [y, m] = ev.date.split('-').map(Number);
     const evMonth = new Date(y, m - 1, 1);
     if (evMonth > endMonth) endMonth = evMonth;
@@ -373,6 +431,13 @@ const ACTIONS = {
   'pick-color': (target) => setColor(target.dataset.cc),
   'close-confirm': closeConfirm,
   'confirm-delete': confirmDelete,
+  'filter-tag': (target) => setActiveTag(target.dataset.tag),
+  'focus-tag-input': () => $('inp-tag').focus(),
+  'remove-tag': (target) => {
+    draftTags = removeTag(draftTags, target.dataset.tag);
+    renderDraftTags();
+    $('inp-tag').focus();
+  },
 };
 
 document.addEventListener('click', (e) => {
@@ -382,6 +447,30 @@ document.addEventListener('click', (e) => {
 
   const target = e.target.closest('[data-action]');
   if (target) ACTIONS[target.dataset.action]?.(target);
+});
+
+$('inp-tag').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    commitTagInput();
+  } else if (e.key === 'Backspace' && !e.target.value && draftTags.length) {
+    draftTags = draftTags.slice(0, -1);
+    renderDraftTags();
+  }
+});
+
+$('inp-tag').addEventListener('input', (e) => {
+  const input = e.target;
+  // Split on commas here rather than on keydown, so pasting and mobile keyboards work too.
+  if (input.value.includes(',')) {
+    const parts = input.value.split(',');
+    input.value = parts.pop();
+    draftTags = parts.reduce(addTag, draftTags);
+    renderDraftTags();
+  } else if (!e.inputType || e.inputType === 'insertReplacementText') {
+    // Picking a suggestion from the datalist adds it straight away.
+    commitTagInput();
+  }
 });
 
 document.addEventListener('keydown', (e) => {

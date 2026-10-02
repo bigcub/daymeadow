@@ -5,8 +5,8 @@ See README.md for structure and commands.
 ## Production safety
 
 - The live Firebase project `daymeadow-55cc0` holds real user data. Never run deploys, data writes or emulator imports against it without asking first.
-- Never change the shape of event documents (`title`, `date`, `color` under `users/{uid}/events`). Existing documents must keep working. If a schema change is ever needed, it must read old documents too.
-- `firestore.rules` changes need a passing `npm run test:rules` before `npm run deploy:rules`.
+- Event documents under `users/{uid}/events` are `{ title, date, color, tags? }`. Changes to that shape must be additive and must still read old documents, which may have no `tags` field. Tag limits in `public/js/tags.js` must match `isValidTags` in `firestore.rules`.
+- `firestore.rules` changes need a passing `npm run test:rules` before `npm run deploy:rules`. Deploy rules before hosting whenever the site starts writing a new field.
 - Local runs use the emulators automatically (see `isLocal` in `public/js/firebase.js`). Keep it that way.
 
 ## Conventions

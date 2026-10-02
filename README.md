@@ -8,7 +8,7 @@ Live at https://daymeadow-55cc0.web.app (Firebase project `daymeadow-55cc0`).
 
 - Static site in `public/`, with no build step. Native ES modules load the Firebase JS SDK from the gstatic CDN.
 - Firebase Auth (Google sign-in), Cloud Firestore and Hosting.
-- Events live at `users/{uid}/events/{eventId}` as `{ title, date: 'YYYY-MM-DD', color }`.
+- Events live at `users/{uid}/events/{eventId}` as `{ title, date: 'YYYY-MM-DD', color, tags? }`. `tags` is optional (up to 5, each up to 24 characters). Untagged events, including every event saved before tags existed, have no `tags` field.
 
 ```
 public/
@@ -17,6 +17,8 @@ public/
   js/main.js      UI: rendering, dialogs, auth state
   js/firebase.js  Firebase setup and data access
   js/dates.js     pure date helpers (unit tested)
+  js/tags.js      pure tag helpers (unit tested)
+  js/samples.js   sample events shown while signed out
 firestore.rules   security rules (tested in test/rules)
 ```
 
@@ -45,9 +47,11 @@ CI runs all of these on every push and pull request.
 
 There is live user data in production. Deploy hosting and rules separately, and deploy rules only after `npm run test:rules` passes.
 
+When a change adds a field, deploy the rules first so the new site's writes are accepted.
+
 ```bash
-npm run deploy:hosting
 npm run deploy:rules
+npm run deploy:hosting
 ```
 
 Avoid a bare `firebase deploy`, which pushes everything at once.

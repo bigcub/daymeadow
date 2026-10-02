@@ -48,7 +48,7 @@
       <a href="/" class="logo">daymeadow<span class="logo-dot">.</span></a>
       <div class="header-center">
         <div class="view-toggle" id="view-toggle">
-          <button class="active" data-action="view" data-view="meadow" aria-pressed="true">Meadow</button>
+          <button class="active" data-action="view" data-view="board" aria-pressed="true">Board</button>
           <button data-action="view" data-view="calendar" aria-pressed="false">Calendar</button>
         </div>
       </div>
@@ -75,8 +75,11 @@
     </header>
 
     <main class="main">
-      <!-- Meadow view (cards) -->
-      <div class="meadow-view active" id="meadow-view">
+      <!-- Tag filter (shown once any event has a tag) -->
+      <div class="tag-filter" id="tag-filter" role="group" aria-label="Filter by tag" hidden></div>
+
+      <!-- Board view (cards) -->
+      <div class="board-view active" id="board-view">
         <div class="grid" id="grid">
           <div class="card card-today">
             <div class="today-eyebrow">Today</div>
@@ -123,71 +126,79 @@
         </div>
 
         <div class="field">
+          <label class="field-label" for="inp-tag">Tags <span class="opt">— optional</span></label>
+          <div class="field-input tag-input" data-action="focus-tag-input">
+            <span class="tag-chips" id="tag-chips"></span>
+            <input
+              class="tag-input-field"
+              id="inp-tag"
+              type="text"
+              list="tag-suggestions"
+              placeholder="Add a tag"
+              autocomplete="off"
+            />
+          </div>
+          <datalist id="tag-suggestions"></datalist>
+        </div>
+
+        <div class="field">
           <span class="field-label" id="colour-label">Card colour</span>
           <div class="swatches" id="swatches" role="radiogroup" aria-labelledby="colour-label">
             <button
-              class="swatch"
+              class="swatch cc-cream"
               role="radio"
               aria-label="Cream"
               data-action="pick-color"
               data-cc="cc-cream"
-              style="background: #fffaf3"
             ></button>
             <button
-              class="swatch"
+              class="swatch cc-sage"
               role="radio"
               aria-label="Sage"
               data-action="pick-color"
               data-cc="cc-sage"
-              style="background: #eff5ee"
             ></button>
             <button
-              class="swatch"
+              class="swatch cc-sky"
               role="radio"
               aria-label="Sky"
               data-action="pick-color"
               data-cc="cc-sky"
-              style="background: #eef4fc"
             ></button>
             <button
-              class="swatch"
+              class="swatch cc-rose"
               role="radio"
               aria-label="Rose"
               data-action="pick-color"
               data-cc="cc-rose"
-              style="background: #fdf0f4"
             ></button>
             <button
-              class="swatch"
+              class="swatch cc-lavender"
               role="radio"
               aria-label="Lavender"
               data-action="pick-color"
               data-cc="cc-lavender"
-              style="background: #f2f0fb"
             ></button>
             <button
-              class="swatch"
+              class="swatch cc-amber"
               role="radio"
               aria-label="Amber"
               data-action="pick-color"
               data-cc="cc-amber"
-              style="background: #fdf6e3"
             ></button>
             <button
-              class="swatch"
+              class="swatch cc-slate"
               role="radio"
               aria-label="Slate"
               data-action="pick-color"
               data-cc="cc-slate"
-              style="background: #f0f2f6"
             ></button>
             <button
-              class="swatch"
+              class="swatch cc-mint"
               role="radio"
               aria-label="Mint"
               data-action="pick-color"
               data-cc="cc-mint"
-              style="background: #edf8f5"
             ></button>
           </div>
         </div>

@@ -18,6 +18,7 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  deleteField,
 } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
 import {
   getAnalytics,
@@ -53,8 +54,9 @@ if (isLocal) {
 const provider = new GoogleAuthProvider();
 
 // Only these fields are stored; firestore.rules rejects anything else.
-function toDoc({ title, date, color }) {
-  return { title, date, color };
+// Untagged events keep the original { title, date, color } shape.
+function toDoc({ title, date, color, tags = [] }) {
+  return tags.length ? { title, date, color, tags } : { title, date, color };
 }
 
 function eventsCol(uid) {
@@ -87,7 +89,8 @@ export function addEvent(uid, data) {
 }
 
 export function updateEvent(uid, id, data) {
-  return updateDoc(eventDoc(uid, id), toDoc(data));
+  // Clear tags explicitly; updateDoc would otherwise keep the old ones.
+  return updateDoc(eventDoc(uid, id), { tags: deleteField(), ...toDoc(data) });
 }
 
 export function deleteEvent(uid, id) {

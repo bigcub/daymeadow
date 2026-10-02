@@ -2,7 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
 import { assertFails, assertSucceeds, initializeTestEnvironment } from '@firebase/rules-unit-testing';
-import { doc, getDoc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField } from 'firebase/firestore';
 
 const VALID = { title: 'Summer holiday', date: '2027-07-12', color: 'cc-sky' };
 
@@ -76,5 +76,31 @@ describe('event validation', () => {
     const ref = doc(as('alice'), 'users/alice/events/e1');
     await assertFails(updateDoc(ref, { color: 'red' }));
     await assertFails(updateDoc(ref, { extra: 1 }));
+  });
+});
+
+describe('tags', () => {
+  const create = (data) => setDoc(doc(as('alice'), 'users/alice/events/new'), data);
+
+  it('accepts events with and without tags', async () => {
+    await assertSucceeds(create(VALID));
+    await assertSucceeds(create({ ...VALID, tags: [] }));
+    await assertSucceeds(create({ ...VALID, tags: ['travel', 'family'] }));
+    await assertSucceeds(create({ ...VALID, tags: ['a', 'b', 'c', 'd', 'e'] }));
+  });
+
+  it('rejects malformed tags', async () => {
+    await assertFails(create({ ...VALID, tags: 'travel' }));
+    await assertFails(create({ ...VALID, tags: ['a', 'b', 'c', 'd', 'e', 'f'] }));
+    await assertFails(create({ ...VALID, tags: [''] }));
+    await assertFails(create({ ...VALID, tags: ['x'.repeat(25)] }));
+    await assertFails(create({ ...VALID, tags: ['ok', 42] }));
+    await assertFails(create({ ...VALID, tags: ['a', 'b', 'c', 'd', { bad: true }] }));
+  });
+
+  it('lets an existing untagged event gain and lose tags', async () => {
+    const ref = doc(as('alice'), 'users/alice/events/e1');
+    await assertSucceeds(updateDoc(ref, { tags: ['travel'] }));
+    await assertSucceeds(updateDoc(ref, { tags: deleteField() }));
   });
 });

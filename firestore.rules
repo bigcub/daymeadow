@@ -6,14 +6,30 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == userId;
     }
 
-    // Mirrors what public/js/firebase.js writes: { title, date, color }.
+    // Limits must match public/js/tags.js. Rules have no loops, so each slot is checked.
+    function isValidTag(tag) {
+      return tag is string && tag.size() > 0 && tag.size() <= 24;
+    }
+
+    function isValidTags(tags) {
+      return tags is list && tags.size() <= 5
+        && (tags.size() < 1 || isValidTag(tags[0]))
+        && (tags.size() < 2 || isValidTag(tags[1]))
+        && (tags.size() < 3 || isValidTag(tags[2]))
+        && (tags.size() < 4 || isValidTag(tags[3]))
+        && (tags.size() < 5 || isValidTag(tags[4]));
+    }
+
+    // Mirrors what public/js/firebase.js writes: { title, date, color, tags? }.
+    // Events saved before tags existed have no tags field.
     function isValidEvent(data) {
-      return data.keys().hasOnly(['title', 'date', 'color'])
+      return data.keys().hasOnly(['title', 'date', 'color', 'tags'])
         && data.keys().hasAll(['title', 'date', 'color'])
         && data.title is string && data.title.size() <= 100
         && data.date is string && data.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
         && data.color in ['cc-cream', 'cc-sage', 'cc-sky', 'cc-rose',
-                          'cc-lavender', 'cc-amber', 'cc-slate', 'cc-mint'];
+                          'cc-lavender', 'cc-amber', 'cc-slate', 'cc-mint']
+        && (!('tags' in data) || isValidTags(data.tags));
     }
 
     match /users/{userId}/events/{eventId} {

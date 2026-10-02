@@ -1,4 +1,14 @@
-import { MONTHS, WEEKDAYS, ordinal, fmtDate, toISODate, addDays, buildCountdown, sortEvents } from './dates.js';
+import {
+  MONTHS,
+  WEEKDAYS,
+  ordinal,
+  fmtDate,
+  toISODate,
+  isValidISODate,
+  addDays,
+  buildCountdown,
+  sortEvents,
+} from './dates.js';
 import * as fb from './firebase.js';
 import { sampleEvents } from './samples.js';
 import { addTag, removeTag, eventTags, collectTags, filterByTag } from './tags.js';
@@ -227,7 +237,9 @@ async function saveEvent() {
   const date = $('inp-date').value;
   const dateInput = $('inp-date');
 
-  if (!date) {
+  if (!isValidISODate(date)) {
+    // An empty value also covers dates the browser couldn't parse.
+    if (dateInput.value || dateInput.validity.badInput) showToast('Please enter a valid date.');
     dateInput.focus();
     dateInput.style.borderColor = '#e06060';
     setTimeout(() => (dateInput.style.borderColor = ''), 1400);

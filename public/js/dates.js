@@ -29,6 +29,12 @@ export function parseISODate(dateStr) {
   return new Date(y, m - 1, d);
 }
 
+// A real calendar date as 'YYYY-MM-DD' with a four-digit year from 1000 (rules expect this shape).
+export function isValidISODate(dateStr) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr) || dateStr < '1000') return false;
+  return toISODate(parseISODate(dateStr)) === dateStr;
+}
+
 export function toISODate(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');

@@ -1316,3 +1316,25 @@ button.cal-event-dot {
 [data-theme='dark'] .tag-input-field::placeholder {
   color: #555;
 }
+
+/* ── Sample events ─────────────────────────────────────────────────── */
+.card-eyebrow:has(.sample-badge) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.sample-badge {
+  position: relative; /* above the card glow circle */
+  z-index: 1;
+  margin: -4px -6px -4px 0;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border: 1px solid var(--border-mid);
+  border-radius: 999px;
+  color: var(--text-muted);
+}

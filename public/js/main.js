@@ -59,7 +59,10 @@ function renderGrid() {
     card.className = `card ev-card ${color}`;
     card.dataset.id = ev.id;
     card.innerHTML = `
-      <div class="card-eyebrow">${esc(fmtDate(ev.date))}</div>
+      <div class="card-eyebrow">
+        <span>${esc(fmtDate(ev.date))}</span>
+        ${ev.sample ? '<span class="sample-badge">Example</span>' : ''}
+      </div>
       <div class="card-mid">
         <div class="countdown-num">${esc(cd.num)}</div>
         <div class="countdown-unit">${esc(cd.unit)}</div>

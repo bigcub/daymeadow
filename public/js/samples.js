@@ -22,5 +22,6 @@ export function sampleEvents(now = new Date()) {
     date: toISODate(addDays(now, s.inDays)),
     color: s.color,
     tags: s.tags,
+    sample: true,
   }));
 }

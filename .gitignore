@@ -67,3 +67,14 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+# Emulator exports and logs
+*-debug.log
+ui-debug.log
+
+# macOS
+.DS_Store
+
+# Claude Code local settings (launch.json is shared)
+.claude/*
+!.claude/launch.json

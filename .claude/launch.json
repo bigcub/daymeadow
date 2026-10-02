@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 5002
+    },
+    {
+      "name": "dev-no-java",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev:no-java"],
+      "port": 5002
+    }
+  ]
+}

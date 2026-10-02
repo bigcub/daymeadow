@@ -36,6 +36,7 @@ describe.each(DATES)('sampleEvents on %s', (now) => {
   it('have unique ids, titles and valid colours', () => {
     expect(new Set(events.map((e) => e.id)).size).toBe(events.length);
     expect(events.every((e) => e.title && COLORS.includes(e.color))).toBe(true);
+    expect(events.every((e) => e.sample === true)).toBe(true);
     expect(events.every((e) => /^\d{4}-\d{2}-\d{2}$/.test(e.date))).toBe(true);
   });
 });

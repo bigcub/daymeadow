@@ -1,5 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { ordinal, fmtDate, toISODate, addDays, daysDiff, buildCountdown, sortEvents } from '../../public/js/dates.js';
+import {
+  ordinal,
+  fmtDate,
+  toISODate,
+  isValidISODate,
+  addDays,
+  daysDiff,
+  buildCountdown,
+  sortEvents,
+} from '../../public/js/dates.js';
 
 const NOW = new Date(2026, 9, 2, 15, 30); // 2 Oct 2026, mid-afternoon local time
 
@@ -88,5 +97,26 @@ describe('sortEvents', () => {
     const events = [{ date: '2027-01-01' }, { date: '2026-10-05' }];
     sortEvents(events, NOW);
     expect(events[0].date).toBe('2027-01-01');
+  });
+});
+
+describe('isValidISODate', () => {
+  it('accepts real dates with four-digit years', () => {
+    expect(isValidISODate('2026-10-02')).toBe(true);
+    expect(isValidISODate('2028-02-29')).toBe(true);
+    expect(isValidISODate('9999-12-31')).toBe(true);
+  });
+
+  it('rejects years that are not four digits', () => {
+    expect(isValidISODate('202677-01-05')).toBe(false);
+    expect(isValidISODate('0026-01-05')).toBe(false);
+    expect(isValidISODate('0999-01-05')).toBe(false);
+  });
+
+  it('rejects impossible or malformed dates', () => {
+    expect(isValidISODate('2027-02-29')).toBe(false);
+    expect(isValidISODate('2026-13-01')).toBe(false);
+    expect(isValidISODate('2026-1-5')).toBe(false);
+    expect(isValidISODate('')).toBe(false);
   });
 });

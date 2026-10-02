@@ -122,7 +122,8 @@
 
         <div class="field">
           <label class="field-label" for="inp-date">Date</label>
-          <input class="field-input" id="inp-date" type="date" required />
+          <!-- max caps the year at four digits; browsers otherwise allow up to six. -->
+          <input class="field-input" id="inp-date" type="date" max="9999-12-31" required />
         </div>
 
         <div class="field" id="tags-field">

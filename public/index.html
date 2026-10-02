@@ -1,1705 +1,216 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>daymeadow</title>
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#f5f3f0">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #f5f3f0;
-      --surface: #ffffff;
-      --text: #28261f;
-      --text-mid: #5a574f;
-      --text-muted: #9b9890;
-      --border: rgba(0,0,0,0.07);
-      --border-mid: rgba(0,0,0,0.12);
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.04);
-      --shadow-md: 0 2px 8px rgba(0,0,0,0.07), 0 8px 24px rgba(0,0,0,0.06);
-      --shadow-lg: 0 8px 24px rgba(0,0,0,0.10), 0 20px 48px rgba(0,0,0,0.08);
-      --radius: 18px;
-      --radius-sm: 10px;
-      --font-ui: 'DM Sans', system-ui, -apple-system, sans-serif;
-      --font-display: 'Lora', Georgia, 'Times New Roman', serif;
-    }
-
-    body {
-      font-family: var(--font-ui);
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    /* ── Header ─────────────────────────────────────────────────────── */
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 40px;
-      height: 64px;
-      background: rgba(245, 243, 240, 0.88);
-      backdrop-filter: blur(16px) saturate(1.4);
-      -webkit-backdrop-filter: blur(16px) saturate(1.4);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .logo {
-      font-family: var(--font-display);
-      font-size: 1.2rem;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      color: var(--text);
-      text-decoration: none;
-      user-select: none;
-    }
-
-    .logo-dot { color: var(--text-muted); }
-
-    .header-center {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .show-mobile { display: none; }
-
-    /* ── Buttons ─────────────────────────────────────────────────────── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-radius: var(--radius-sm);
-      font-family: var(--font-ui);
-      font-size: 0.865rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      border: none;
-      white-space: nowrap;
-      text-decoration: none;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-
-    .btn-primary {
-      background: var(--text);
-      color: #fff;
-    }
-    .btn-primary:hover {
-      background: #111;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.22);
-      transform: translateY(-1px);
-    }
-    .btn-primary:active { transform: translateY(0); box-shadow: none; }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--text-mid);
-      border: 1px solid var(--border-mid);
-    }
-    .btn-outline:hover {
-      background: white;
-      color: var(--text);
-      border-color: rgba(0,0,0,0.18);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text-muted);
-      padding: 8px 12px;
-    }
-    .btn-ghost:hover {
-      background: rgba(0,0,0,0.05);
-      color: var(--text-mid);
-    }
-
-    .btn-danger {
-      background: #fff0f0;
-      color: #c0392b;
-      border: 1px solid rgba(192,57,43,0.15);
-    }
-    .btn-danger:hover { background: #ffe5e5; }
-
-    .btn-icon {
-      width: 30px;
-      height: 30px;
-      padding: 0;
-      border-radius: 8px;
-      background: rgba(0,0,0,0.0);
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      border: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.1s;
-    }
-    .btn-icon:hover { background: rgba(0,0,0,0.07); color: var(--text); }
-
-    /* ── Grid ─────────────────────────────────────────────────────────── */
-    .main {
-      padding: 36px 40px 80px;
-      max-width: 1440px;
-      margin: 0 auto;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
-      gap: 18px;
-    }
-
-    /* ── Card base ───────────────────────────────────────────────────── */
-    .card {
-      border-radius: var(--radius);
-      padding: 26px 28px 22px;
-      box-shadow: var(--shadow-sm);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      position: relative;
-      overflow: hidden;
-      min-height: 198px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .card:not(.card-add):hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
-    }
-
-    /* Card glow circle */
-    .card::after {
-      content: '';
-      position: absolute;
-      top: -40px;
-      right: -40px;
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.25);
-      pointer-events: none;
-    }
-
-    /* ── Today card ──────────────────────────────────────────────────── */
-    .card-today {
-      background: var(--surface);
-      justify-content: space-between;
-    }
-
-    .today-eyebrow {
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 18px;
-    }
-
-    .today-date {
-      font-family: var(--font-display);
-      font-size: 1.65rem;
-      font-weight: 600;
-      line-height: 1.15;
-      color: var(--text);
-      letter-spacing: -0.02em;
-    }
-
-    .today-weekday {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .today-footer {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: auto;
-      padding-top: 16px;
-    }
-
-    .tz-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #5ac47a;
-      flex-shrink: 0;
-    }
-
-    .tz-label {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-
-    /* ── Event card colours ──────────────────────────────────────────── */
-    .cc-cream    { background: #fffaf3; }
-    .cc-sage     { background: #eff5ee; }
-    .cc-sky      { background: #eef4fc; }
-    .cc-rose     { background: #fdf0f4; }
-    .cc-lavender { background: #f2f0fb; }
-    .cc-amber    { background: #fdf6e3; }
-    .cc-slate    { background: #f0f2f6; }
-    .cc-mint     { background: #edf8f5; }
-
-    /* ── Event card internals ────────────────────────────────────────── */
-    .card-eyebrow {
-      font-size: 0.68rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 14px;
-    }
-
-    .card-mid {
-      flex: 1;
-      display: flex;
-      flex-direction: row;
-      align-items: baseline;
-      gap: 9px;
-      justify-content: flex-start;
-      padding: 4px 0;
-      flex-wrap: wrap;
-    }
-
-    .countdown-num {
-      font-family: var(--font-display);
-      font-size: 3.6rem;
-      line-height: 1;
-      font-weight: 600;
-      color: var(--text);
-      letter-spacing: -0.03em;
-      margin-left: -2px;
-      flex-shrink: 0;
-    }
-
-    .countdown-unit {
-      font-size: 1.05rem;
-      color: var(--text-mid);
-      font-weight: 500;
-      letter-spacing: -0.01em;
-    }
-
-    .card-bottom {
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(0,0,0,0.07);
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .card-title-text {
-      font-size: 0.93rem;
-      font-weight: 500;
-      color: var(--text);
-      line-height: 1.35;
-    }
-
-    .card-controls {
-      display: flex;
-      gap: 2px;
-      opacity: 0;
-      transition: opacity 0.15s ease;
-      flex-shrink: 0;
-    }
-    .card:hover .card-controls { opacity: 1; }
-
-    /* ── Add card ─────────────────────────────────────────────────────── */
-    .card-add {
-      background: transparent;
-      border: 2px dashed var(--border-mid);
-      box-shadow: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 10px;
-      color: var(--text-muted);
-      cursor: pointer;
-      min-height: 198px;
-      transition: all 0.15s ease;
-    }
-    .card-add:hover {
-      border-color: rgba(0,0,0,0.22);
-      background: rgba(255,255,255,0.55);
-      color: var(--text-mid);
-      transform: translateY(-2px);
-    }
-    .card-add:hover .add-icon { opacity: 0.55; }
-    .add-icon {
-      font-size: 1.6rem;
-      opacity: 0.3;
-      transition: opacity 0.15s;
-      line-height: 1;
-    }
-    .add-label {
-      font-size: 0.82rem;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-    }
-
-    /* ── Modal ──────────────────────────────────────────────────────────── */
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(20, 18, 14, 0.40);
-      backdrop-filter: blur(6px) saturate(0.9);
-      -webkit-backdrop-filter: blur(6px) saturate(0.9);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
-    .overlay.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .modal {
-      background: var(--surface);
-      border-radius: 22px;
-      padding: 36px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: var(--shadow-lg);
-      transform: translateY(10px) scale(0.975);
-      transition: transform 0.22s cubic-bezier(0.34, 1.3, 0.64, 1);
-    }
-    .overlay.open .modal {
-      transform: translateY(0) scale(1);
-    }
-
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 28px;
-    }
-
-    .modal-title {
-      font-family: var(--font-display);
-      font-size: 1.35rem;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    /* ── Form ──────────────────────────────────────────────────────────── */
-    .field {
-      margin-bottom: 20px;
-    }
-
-    .field-label {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    .field-label .opt {
-      font-weight: 400;
-      letter-spacing: 0;
-      text-transform: none;
-      font-size: 0.7rem;
-      color: #c0bdb9;
-    }
-
-    .field-input {
-      width: 100%;
-      padding: 11px 14px;
-      border: 1.5px solid #e6e3de;
-      border-radius: 10px;
-      font-family: var(--font-ui);
-      font-size: 0.93rem;
-      color: var(--text);
-      background: var(--bg);
-      outline: none;
-      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
-    }
-    .field-input:focus {
-      border-color: #9a9690;
-      background: white;
-      box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
-    }
-    .field-input::placeholder { color: #c5c2bd; }
-
-    /* Date input fix */
-    input[type="date"]::-webkit-calendar-picker-indicator {
-      opacity: 0.4;
-      cursor: pointer;
-    }
-
-    /* ── Colour picker ──────────────────────────────────────────────────── */
-    .swatches {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .swatch {
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
-      position: relative;
-    }
-    .swatch:hover { transform: scale(1.12); }
-    .swatch.active {
-      border-color: var(--text);
-      transform: scale(1.12);
-      box-shadow: 0 0 0 2px white inset;
-    }
-
-    /* ── Modal actions ──────────────────────────────────────────────────── */
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 28px;
-    }
-    .modal-actions .btn { flex: 1; padding: 11px 16px; font-size: 0.9rem; }
-
-    /* ── Confirm dialog ─────────────────────────────────────────────────── */
-    .confirm-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(20,18,14,0.35);
-      backdrop-filter: blur(4px);
-      z-index: 150;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.15s;
-    }
-    .confirm-overlay.open { opacity: 1; pointer-events: auto; }
-    .confirm-box {
-      background: white;
-      border-radius: 16px;
-      padding: 28px;
-      max-width: 320px;
-      width: 100%;
-      box-shadow: var(--shadow-lg);
-      transform: scale(0.95);
-      transition: transform 0.18s cubic-bezier(0.34, 1.3, 0.64, 1);
-    }
-    .confirm-overlay.open .confirm-box { transform: scale(1); }
-    .confirm-title { font-weight: 600; font-size: 1rem; margin-bottom: 8px; }
-    .confirm-body { font-size: 0.88rem; color: var(--text-mid); margin-bottom: 22px; }
-    .confirm-actions { display: flex; gap: 8px; }
-    .confirm-actions .btn { flex: 1; }
-
-    /* ── Empty state ───────────────────────────────────────────────────── */
-    .empty-hint {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      display: none;
-    }
-
-    /* ── Toast ─────────────────────────────────────────────────────────── */
-    .toast {
-      position: fixed;
-      bottom: 28px;
-      left: 50%;
-      transform: translateX(-50%) translateY(10px);
-      background: var(--text);
-      color: white;
-      font-size: 0.85rem;
-      font-weight: 500;
-      padding: 10px 20px;
-      border-radius: 40px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.22);
-      opacity: 0;
-      transition: opacity 0.2s, transform 0.2s;
-      z-index: 200;
-      pointer-events: none;
-      white-space: nowrap;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    /* ── Sign-in banner ──────────────────────────────────────────────── */
-    .signin-banner {
-      background: white;
-      border-bottom: 1px solid var(--border);
-      padding: 10px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      font-size: 0.83rem;
-      color: var(--text-mid);
-    }
-    .signin-banner strong { color: var(--text); }
-    .signin-dismiss {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-muted);
-      font-size: 1rem;
-      padding: 2px 6px;
-      border-radius: 6px;
-      transition: background 0.1s;
-    }
-    .signin-dismiss:hover { background: rgba(0,0,0,0.05); }
-
-    /* ── User avatar ──────────────────────────────────────────────── */
-    .user-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 4px 4px 12px;
-      border-radius: 40px;
-      background: rgba(0,0,0,0.04);
-      font-size: 0.82rem;
-      color: var(--text-mid);
-      font-weight: 500;
-    }
-    .user-avatar {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-    .user-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .btn-signout {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-muted);
-      font-size: 0.78rem;
-      font-family: var(--font-ui);
-      padding: 4px 8px;
-      border-radius: 6px;
-      transition: background 0.1s, color 0.1s;
-    }
-    .btn-signout:hover { background: rgba(0,0,0,0.06); color: var(--text-mid); }
-
-    /* ── View toggle ───────────────────────────────────────────────── */
-    .view-toggle {
-      display: flex;
-      background: rgba(0,0,0,0.05);
-      border-radius: 8px;
-      padding: 3px;
-      gap: 2px;
-    }
-    .view-toggle button {
-      font-family: var(--font-ui);
-      font-size: 0.78rem;
-      font-weight: 500;
-      padding: 5px 14px;
-      border: none;
-      border-radius: 6px;
-      background: transparent;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.15s ease;
-      white-space: nowrap;
-    }
-    .view-toggle button:hover { color: var(--text-mid); }
-    .view-toggle button.active {
-      background: white;
-      color: var(--text);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
-
-    /* ── Calendar view ─────────────────────────────────────────────── */
-    .calendar-view { display: none; max-width: 720px; margin: 0 auto; }
-    .calendar-view.active { display: block; }
-    .meadow-view.active { display: block; }
-    .meadow-view { display: none; }
-
-    .cal-month {
-      background: var(--surface);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
-      padding: 28px;
-      margin-bottom: 24px;
-    }
-
-    .cal-month-header {
-      font-family: var(--font-display);
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 20px;
-      letter-spacing: -0.01em;
-    }
-
-    .cal-weekdays {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 0;
-      margin-bottom: 6px;
-    }
-
-    .cal-weekday-label {
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      text-align: center;
-      padding: 4px 0;
-    }
-
-    .cal-days {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 0;
-      border-left: 1px solid var(--border);
-      border-top: 1px solid var(--border);
-    }
-
-    .cal-day {
-      position: relative;
-      aspect-ratio: 1;
-      padding: 6px 7px;
-      border-right: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      cursor: default;
-      transition: background 0.1s;
-      overflow: hidden;
-    }
-
-    .cal-day:hover { background: rgba(0,0,0,0.015); }
-    .cal-day.cal-day-empty:hover { background: transparent; }
-
-    .cal-day-num {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--text-mid);
-      margin-bottom: 4px;
-    }
-
-    .cal-day.cal-past .cal-day-num { color: var(--text-muted); opacity: 0.5; }
-    .cal-day.cal-past { opacity: 0.6; }
-
-    .cal-day.cal-today .cal-day-num {
-      background: var(--text);
-      color: white;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-
-    .cal-event-dot {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 0;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: background 0.1s;
-    }
-    .cal-event-dot:hover { background: rgba(0,0,0,0.05); }
-
-    .cal-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .cal-event-title {
-      font-size: 0.68rem;
-      font-weight: 500;
-      color: var(--text-mid);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      line-height: 1.3;
-    }
-
-    /* Dot colours matching card colours */
-    .cal-dot-cream    { background: #e8d5b8; }
-    .cal-dot-sage     { background: #8bb87e; }
-    .cal-dot-sky      { background: #7aabe0; }
-    .cal-dot-rose     { background: #d98aa0; }
-    .cal-dot-lavender { background: #9b8ec4; }
-    .cal-dot-amber    { background: #d4a843; }
-    .cal-dot-slate    { background: #8a90a0; }
-    .cal-dot-mint     { background: #5db89e; }
-
-    /* Calendar hover tooltip */
-    .cal-tooltip {
-      position: absolute;
-      bottom: calc(100% + 6px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--text);
-      color: white;
-      font-size: 0.72rem;
-      font-weight: 500;
-      padding: 5px 10px;
-      border-radius: 6px;
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.12s;
-      z-index: 10;
-    }
-    .cal-tooltip::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 4px solid transparent;
-      border-top-color: var(--text);
-    }
-    .cal-event-dot:hover .cal-tooltip { opacity: 1; }
-
-    /* ── Responsive ─────────────────────────────────────────────────── */
-    @media (max-width: 640px) {
-      .header { padding: 0 12px; height: 48px; }
-      .header-center { position: static; transform: none; }
-      .logo { font-size: 1rem; }
-      .view-toggle button { padding: 5px 10px; font-size: 0.75rem; }
-      .header-right { gap: 4px; }
-      .header-right .btn { padding: 5px 10px; font-size: 0.8rem; }
-      #header-signin { display: none !important; }
-      .hide-mobile { display: none; }
-      .show-mobile { display: inline; }
-      .theme-toggle { font-size: 1rem; padding: 4px; }
-      .main { padding: 24px 16px 60px; }
-      .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-      .card { padding: 20px 20px 18px; min-height: 178px; }
-      .countdown-num { font-size: 2.9rem; }
-      .today-date { font-size: 1.35rem; }
-      .modal { padding: 28px 24px; }
-      .cal-month { padding: 16px; }
-      .cal-day { padding: 4px 3px; }
-      .cal-event-title { display: none; }
-      .cal-dot { width: 6px; height: 6px; }
-    }
-    @media (max-width: 380px) {
-      .grid { grid-template-columns: 1fr; }
-    }
-
-    /* ── Dark mode ──────────────────────────────────────────────────── */
-    [data-theme="dark"] {
-      --bg: #1a1a1e;
-      --surface: #242428;
-      --text: #e8e6e1;
-      --text-mid: #a8a5a0;
-      --text-muted: #6b6965;
-      --border: rgba(255,255,255,0.08);
-      --border-mid: rgba(255,255,255,0.14);
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2);
-      --shadow-md: 0 2px 8px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.3);
-      --shadow-lg: 0 8px 24px rgba(0,0,0,0.5), 0 20px 48px rgba(0,0,0,0.4);
-    }
-
-    [data-theme="dark"] .header {
-      background: rgba(26, 26, 30, 0.88);
-    }
-
-    [data-theme="dark"] .btn-primary {
-      background: #e8e6e1;
-      color: #1a1a1e;
-    }
-    [data-theme="dark"] .btn-primary:hover {
-      background: #fff;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-    }
-
-    [data-theme="dark"] .btn-outline {
-      border-color: rgba(255,255,255,0.18);
-      color: var(--text-mid);
-    }
-    [data-theme="dark"] .btn-outline:hover {
-      background: rgba(255,255,255,0.08);
-      color: var(--text);
-      border-color: rgba(255,255,255,0.25);
-    }
-
-    [data-theme="dark"] .btn-ghost:hover {
-      background: rgba(255,255,255,0.08);
-    }
-
-    [data-theme="dark"] .btn-icon:hover {
-      background: rgba(255,255,255,0.1);
-      color: var(--text);
-    }
-
-    [data-theme="dark"] .btn-danger {
-      background: rgba(192,57,43,0.15);
-      color: #e74c3c;
-      border-color: rgba(192,57,43,0.25);
-    }
-    [data-theme="dark"] .btn-danger:hover {
-      background: rgba(192,57,43,0.25);
-    }
-
-    /* Dark card colours */
-    [data-theme="dark"] .cc-cream    { background: #2a2722; }
-    [data-theme="dark"] .cc-sage     { background: #222a23; }
-    [data-theme="dark"] .cc-sky      { background: #21262e; }
-    [data-theme="dark"] .cc-rose     { background: #2c2226; }
-    [data-theme="dark"] .cc-lavender { background: #272430; }
-    [data-theme="dark"] .cc-amber    { background: #2a2720; }
-    [data-theme="dark"] .cc-slate    { background: #24262b; }
-    [data-theme="dark"] .cc-mint     { background: #212b28; }
-
-    /* Card glow in dark */
-    [data-theme="dark"] .card::after {
-      background: rgba(255,255,255,0.04);
-    }
-
-    /* Today card */
-    [data-theme="dark"] .card-today {
-      background: var(--surface);
-    }
-
-    /* Modal & confirm */
-    [data-theme="dark"] .modal {
-      background: #2a2a2e;
-    }
-    [data-theme="dark"] .confirm-box {
-      background: #2a2a2e;
-    }
-
-    /* Form inputs */
-    [data-theme="dark"] .field-input {
-      border-color: rgba(255,255,255,0.12);
-      background: #1e1e22;
-      color: var(--text);
-    }
-    [data-theme="dark"] .field-input:focus {
-      border-color: rgba(255,255,255,0.3);
-      background: #222226;
-      box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
-    }
-    [data-theme="dark"] .field-input::placeholder { color: #555; }
-
-    /* Swatches in dark */
-    [data-theme="dark"] .swatch.active {
-      border-color: var(--text);
-      box-shadow: 0 0 0 2px #2a2a2e inset;
-    }
-
-    /* Sign-in banner */
-    [data-theme="dark"] .signin-banner {
-      background: #222226;
-    }
-    [data-theme="dark"] .signin-dismiss:hover {
-      background: rgba(255,255,255,0.08);
-    }
-
-    /* User pill */
-    [data-theme="dark"] .user-pill {
-      background: rgba(255,255,255,0.08);
-    }
-    [data-theme="dark"] .btn-signout:hover {
-      background: rgba(255,255,255,0.08);
-    }
-
-    /* View toggle */
-    [data-theme="dark"] .view-toggle {
-      background: rgba(255,255,255,0.08);
-    }
-    [data-theme="dark"] .view-toggle button.active {
-      background: rgba(255,255,255,0.14);
-      color: var(--text);
-      box-shadow: none;
-    }
-
-    /* Calendar */
-    [data-theme="dark"] .cal-day:hover {
-      background: rgba(255,255,255,0.03);
-    }
-    [data-theme="dark"] .cal-event-dot:hover {
-      background: rgba(255,255,255,0.08);
-    }
-
-    /* Toast */
-    [data-theme="dark"] .toast {
-      background: #e8e6e1;
-      color: #1a1a1e;
-    }
-
-    /* Add card in dark */
-    [data-theme="dark"] .card-add {
-      border-color: rgba(255,255,255,0.14);
-    }
-    [data-theme="dark"] .card-add:hover {
-      border-color: rgba(255,255,255,0.25);
-      background: rgba(255,255,255,0.04);
-    }
-
-    /* Dark mode toggle button */
-    .theme-toggle {
-      width: 30px;
-      height: 30px;
-      padding: 0;
-      border-radius: 8px;
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      border: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s;
-    }
-    .theme-toggle:hover {
-      background: rgba(128,128,128,0.12);
-      color: var(--text);
-    }
-  </style>
-</head>
-<body>
-
-<!-- Sign-in nudge (shown only when signed out) -->
-<div class="signin-banner" id="signin-banner" style="display:none">
-  <span><strong>Sign in</strong> to save your events across devices.</span>
-  <div style="display:flex;gap:8px;align-items:center">
-    <button class="btn btn-outline" style="padding:6px 14px;font-size:0.8rem" onclick="signInWithGoogle()">Sign in with Google</button>
-    <button class="signin-dismiss" onclick="dismissBanner()">&#x2715;</button>
-  </div>
-</div>
-
-<!-- Header -->
-<header class="header">
-  <a href="#" class="logo">daymeadow<span class="logo-dot">.</span></a>
-  <div class="header-center">
-    <div class="view-toggle" id="view-toggle">
-      <button class="active" data-view="meadow" onclick="switchView('meadow')">Meadow</button>
-      <button data-view="calendar" onclick="switchView('calendar')">Calendar</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>daymeadow</title>
+    <meta name="description" content="Count down to the days that matter." />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#f5f3f0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Lora:ital,wght@0,400;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script>
+      // Apply the theme before first paint: saved choice, else the system setting.
+      (function () {
+        let theme = null;
+        try {
+          theme = localStorage.getItem('theme');
+        } catch {
+          // Storage unavailable; fall back to the system setting.
+        }
+        if (!theme) theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+    <script type="module" src="/js/main.js"></script>
+  </head>
+  <body>
+    <!-- Sign-in nudge (shown only when signed out) -->
+    <div class="signin-banner" id="signin-banner" hidden>
+      <span><strong>Sign in</strong> to save your events across devices.</span>
+      <div style="display: flex; gap: 8px; align-items: center">
+        <button class="btn btn-outline" style="padding: 6px 14px; font-size: 0.8rem" data-action="sign-in">
+          Sign in with Google
+        </button>
+        <button class="signin-dismiss" data-action="dismiss-banner" aria-label="Dismiss">&#x2715;</button>
+      </div>
     </div>
-  </div>
-  <div class="header-right">
-    <button class="btn btn-outline" onclick="openModal()"><span class="hide-mobile">+ New event</span><span class="show-mobile">+</span></button>
-    <!-- Signed-out: show sign-in button -->
-    <button class="btn btn-ghost" id="header-signin" onclick="signInWithGoogle()" style="display:none">Sign in</button>
-    <!-- Signed-in: show user pill -->
-    <div class="user-pill" id="header-user" style="display:none">
-      <span class="user-name" id="user-name"></span>
-      <img class="user-avatar" id="user-avatar" alt="">
-    </div>
-    <button class="btn-signout" id="header-signout" onclick="signOut()" style="display:none">Sign out</button>
-    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">☀️</button>
-  </div>
-</header>
 
-<!-- Main content -->
-<main class="main">
-  <!-- Meadow view (cards) -->
-  <div class="meadow-view active" id="meadow-view">
-    <div class="grid" id="grid">
-      <!-- Today card (static) -->
-      <div class="card card-today">
-        <div class="today-eyebrow">Today</div>
-        <div>
-          <div class="today-date" id="today-date">—</div>
-          <div class="today-weekday" id="today-weekday">—</div>
-        </div>
-        <div class="today-footer">
-          <div class="tz-dot"></div>
-          <div class="tz-label" id="today-tz">—</div>
+    <header class="header">
+      <a href="/" class="logo">daymeadow<span class="logo-dot">.</span></a>
+      <div class="header-center">
+        <div class="view-toggle" id="view-toggle">
+          <button class="active" data-action="view" data-view="meadow" aria-pressed="true">Meadow</button>
+          <button data-action="view" data-view="calendar" aria-pressed="false">Calendar</button>
         </div>
       </div>
-      <!-- Event cards injected here by JS -->
-    </div>
-  </div>
-
-  <!-- Calendar view -->
-  <div class="calendar-view" id="calendar-view"></div>
-</main>
-
-<!-- Add / Edit Modal -->
-<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
-  <div class="modal" id="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="modal-title">New event</div>
-      <button class="btn-icon" onclick="closeModal()" aria-label="Close">✕</button>
-    </div>
-
-    <div class="field">
-      <label class="field-label" for="inp-title">Name <span class="opt">— optional</span></label>
-      <input class="field-input" id="inp-title" type="text" placeholder="e.g. Summer holiday" autocomplete="off" maxlength="60">
-    </div>
-
-    <div class="field">
-      <label class="field-label" for="inp-date">Date</label>
-      <input class="field-input" id="inp-date" type="date">
-    </div>
-
-    <div class="field">
-      <label class="field-label">Card colour</label>
-      <div class="swatches" id="swatches">
-        <div class="swatch" data-cc="cc-cream"    style="background:#fffaf3" onclick="pickColor(this)"></div>
-        <div class="swatch" data-cc="cc-sage"     style="background:#eff5ee" onclick="pickColor(this)"></div>
-        <div class="swatch" data-cc="cc-sky"      style="background:#eef4fc" onclick="pickColor(this)"></div>
-        <div class="swatch" data-cc="cc-rose"     style="background:#fdf0f4" onclick="pickColor(this)"></div>
-        <div class="swatch" data-cc="cc-lavender" style="background:#f2f0fb" onclick="pickColor(this)"></div>
-        <div class="swatch" data-cc="cc-amber"    style="background:#fdf6e3" onclick="pickColor(this)"></div>
-        <div class="swatch" data-cc="cc-slate"    style="background:#f0f2f6" onclick="pickColor(this)"></div>
-        <div class="swatch" data-cc="cc-mint"     style="background:#edf8f5" onclick="pickColor(this)"></div>
+      <div class="header-right">
+        <button class="btn btn-outline" data-action="new" aria-label="New event">
+          <span class="hide-mobile">+ New event</span><span class="show-mobile">+</span>
+        </button>
+        <button class="btn btn-ghost" id="header-signin" data-action="sign-in" hidden>Sign in</button>
+        <div class="user-pill" id="header-user" hidden>
+          <span class="user-name" id="user-name"></span>
+          <img class="user-avatar" id="user-avatar" alt="" referrerpolicy="no-referrer" />
+        </div>
+        <button class="btn-signout" id="header-signout" data-action="sign-out" hidden>Sign out</button>
+        <button
+          class="theme-toggle"
+          id="theme-toggle"
+          data-action="toggle-theme"
+          title="Toggle dark mode"
+          aria-label="Toggle dark mode"
+        >
+          ☀️
+        </button>
       </div>
-    </div>
+    </header>
 
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveEvent()">Save event</button>
-    </div>
-  </div>
-</div>
-
-<!-- Delete confirm -->
-<div class="confirm-overlay" id="confirm-overlay">
-  <div class="confirm-box">
-    <div class="confirm-title">Remove this event?</div>
-    <div class="confirm-body">This can't be undone.</div>
-    <div class="confirm-actions">
-      <button class="btn btn-outline" onclick="closeConfirm()">Cancel</button>
-      <button class="btn btn-danger" onclick="confirmDelete()">Remove</button>
-    </div>
-  </div>
-</div>
-
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<script>
-// ── Helpers ────────────────────────────────────────────────────────────────
-const MONTHS  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const WEEKDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-
-function ordinal(n) {
-  const s = ['th','st','nd','rd'];
-  const v = n % 100;
-  return n + (s[(v - 20) % 10] || s[v] || s[0]);
-}
-
-function fmtDate(dateStr) {
-  // Parse as local date
-  const [y, m, d] = dateStr.split('-').map(Number);
-  return `${MONTHS[m-1]} ${ordinal(d)}, ${y}`;
-}
-
-function daysDiff(dateStr) {
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  const [y, m, d] = dateStr.split('-').map(Number);
-  const target = new Date(y, m - 1, d);
-  return Math.round((target - now) / 86_400_000);
-}
-
-function buildCountdown(dateStr) {
-  const diff = daysDiff(dateStr);
-  if (diff < 0) {
-    const n = Math.abs(diff);
-    return { num: n, unit: n === 1 ? 'day ago' : 'days ago' };
-  }
-  if (diff === 0) {
-    return { num: '—', unit: 'today' };
-  }
-  if (diff <= 14) {
-    return { num: diff, unit: diff === 1 ? 'day' : 'days' };
-  }
-  if (diff <= 89) {
-    const w = Math.floor(diff / 7), r = diff % 7;
-    if (r === 0) return { num: w, unit: w === 1 ? 'week' : 'weeks' };
-    return { num: w, unit: `${w === 1 ? 'week' : 'weeks'} + ${r} ${r === 1 ? 'day' : 'days'}` };
-  }
-  if (diff < 365) {
-    const mo = Math.round(diff / 30.44);
-    return { num: mo, unit: mo === 1 ? 'month' : 'months' };
-  }
-  const yr = (diff / 365.25).toFixed(1);
-  return { num: yr, unit: +yr === 1 ? 'year' : 'years' };
-}
-
-function esc(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ── State ──────────────────────────────────────────────────────────────────
-const SAMPLE_EVENTS = [
-  { id: 's1', title: 'Summer holiday',    date: '2026-07-12', color: 'cc-sky' },
-  { id: 's2', title: "Mum's birthday",    date: '2026-03-28', color: 'cc-rose' },
-  { id: 's3', title: 'Christmas',         date: '2026-12-25', color: 'cc-amber' },
-  { id: 's4', title: 'Half marathon',     date: '2026-05-10', color: 'cc-sage' },
-  { id: 's5', title: "New Year's Eve",    date: '2026-12-31', color: 'cc-lavender' },
-  { id: 's6', title: 'Project deadline',  date: '2026-03-20', color: 'cc-cream' },
-];
-let events = [];
-let editingId = null;
-let selectedColor = 'cc-cream';
-let pendingDeleteId = null;
-let currentUser = null;
-let authResolved = false;
-
-// ── Today card ─────────────────────────────────────────────────────────────
-function renderToday() {
-  const now = new Date();
-  const month = MONTHS[now.getMonth()];
-  const day   = ordinal(now.getDate());
-  const year  = now.getFullYear();
-  const wday  = WEEKDAYS[now.getDay()];
-  const tz    = Intl.DateTimeFormat().resolvedOptions().timeZone.replace(/_/g, ' ');
-
-  document.getElementById('today-date').textContent    = `${month} ${day}`;
-  document.getElementById('today-weekday').textContent = `${wday}, ${year}`;
-  document.getElementById('today-tz').textContent      = tz;
-}
-
-// ── Render grid ────────────────────────────────────────────────────────────
-function renderGrid() {
-  const grid = document.getElementById('grid');
-  // Remove old event cards + add-card
-  grid.querySelectorAll('.ev-card, .card-add').forEach(el => el.remove());
-
-  const sorted = [...events].sort((a, b) => {
-    // Sort by days remaining (closest first), past events at the end
-    const da = daysDiff(a.date), db = daysDiff(b.date);
-    if (da >= 0 && db >= 0) return da - db;
-    if (da < 0  && db < 0)  return db - da;   // most recent past first
-    return da >= 0 ? -1 : 1;                  // future before past
-  });
-
-  sorted.forEach(ev => {
-    const cd    = buildCountdown(ev.date);
-    const title = ev.title || fmtDate(ev.date);
-    const card  = document.createElement('div');
-    card.className = `card ev-card ${ev.color}`;
-    card.dataset.id = ev.id;
-    card.innerHTML = `
-      <div class="card-eyebrow">${esc(fmtDate(ev.date))}</div>
-      <div class="card-mid">
-        <div class="countdown-num">${esc(String(cd.num))}</div>
-        <div class="countdown-unit">${esc(cd.unit)}</div>
-      </div>
-      <div class="card-bottom">
-        <div class="card-title-text">${esc(title)}</div>
-        <div class="card-controls">
-          <button class="btn-icon" onclick="editEvent('${ev.id}')" title="Edit" aria-label="Edit event">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2L12 4.5 4.5 12H2V9.5L9.5 2Z"/></svg>
-          </button>
-          <button class="btn-icon" onclick="askDelete('${ev.id}')" title="Delete" aria-label="Delete event">
-            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><line x1="1" y1="1" x2="11" y2="11"/><line x1="11" y1="1" x2="1" y2="11"/></svg>
-          </button>
+    <main class="main">
+      <!-- Meadow view (cards) -->
+      <div class="meadow-view active" id="meadow-view">
+        <div class="grid" id="grid">
+          <div class="card card-today">
+            <div class="today-eyebrow">Today</div>
+            <div>
+              <div class="today-date" id="today-date">—</div>
+              <div class="today-weekday" id="today-weekday">—</div>
+            </div>
+            <div class="today-footer">
+              <div class="tz-dot"></div>
+              <div class="tz-label" id="today-tz">—</div>
+            </div>
+          </div>
+          <!-- Event cards are rendered by js/main.js -->
         </div>
       </div>
-    `;
-    grid.appendChild(card);
-  });
 
-  // Add-card
-  const addCard = document.createElement('div');
-  addCard.className = 'card card-add';
-  addCard.setAttribute('role', 'button');
-  addCard.setAttribute('tabindex', '0');
-  addCard.setAttribute('aria-label', 'Add new event');
-  addCard.onclick = () => openModal();
-  addCard.onkeydown = e => { if (e.key === 'Enter') openModal(); };
-  addCard.innerHTML = `<div class="add-icon">+</div><div class="add-label">New event</div>`;
-  grid.appendChild(addCard);
+      <!-- Calendar view -->
+      <div class="calendar-view" id="calendar-view"></div>
+    </main>
 
-  // Also refresh calendar if it's the active view
-  if (currentView === 'calendar') renderCalendar();
-}
+    <!-- Add / edit modal -->
+    <div class="overlay" id="overlay">
+      <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-header">
+          <div class="modal-title" id="modal-title">New event</div>
+          <button class="btn-icon" data-action="close-modal" aria-label="Close">✕</button>
+        </div>
 
-// ── Theme toggle ──────────────────────────────────────────────────────────
-(function restoreTheme() {
-  const saved = localStorage.getItem('theme');
-  if (saved) {
-    document.documentElement.setAttribute('data-theme', saved);
-    const btn = document.getElementById('theme-toggle');
-    if (btn) btn.textContent = saved === 'dark' ? '🌙' : '☀️';
-  }
-})();
+        <div class="field">
+          <label class="field-label" for="inp-title">Name <span class="opt">— optional</span></label>
+          <input
+            class="field-input"
+            id="inp-title"
+            type="text"
+            placeholder="e.g. Summer holiday"
+            autocomplete="off"
+            maxlength="60"
+          />
+        </div>
 
-function toggleTheme() {
-  const html = document.documentElement;
-  const isDark = html.getAttribute('data-theme') === 'dark';
-  const theme = isDark ? 'light' : 'dark';
-  html.setAttribute('data-theme', theme);
-  localStorage.setItem('theme', theme);
-  document.getElementById('theme-toggle').textContent = isDark ? '☀️' : '🌙';
-}
+        <div class="field">
+          <label class="field-label" for="inp-date">Date</label>
+          <input class="field-input" id="inp-date" type="date" required />
+        </div>
 
-// Restore saved theme
-(function() {
-  const saved = localStorage.getItem('theme');
-  if (saved) {
-    document.documentElement.setAttribute('data-theme', saved);
-    const btn = document.getElementById('theme-toggle');
-    if (btn) btn.textContent = saved === 'dark' ? '🌙' : '☀️';
-  }
-})();
+        <div class="field">
+          <span class="field-label" id="colour-label">Card colour</span>
+          <div class="swatches" id="swatches" role="radiogroup" aria-labelledby="colour-label">
+            <button
+              class="swatch"
+              role="radio"
+              aria-label="Cream"
+              data-action="pick-color"
+              data-cc="cc-cream"
+              style="background: #fffaf3"
+            ></button>
+            <button
+              class="swatch"
+              role="radio"
+              aria-label="Sage"
+              data-action="pick-color"
+              data-cc="cc-sage"
+              style="background: #eff5ee"
+            ></button>
+            <button
+              class="swatch"
+              role="radio"
+              aria-label="Sky"
+              data-action="pick-color"
+              data-cc="cc-sky"
+              style="background: #eef4fc"
+            ></button>
+            <button
+              class="swatch"
+              role="radio"
+              aria-label="Rose"
+              data-action="pick-color"
+              data-cc="cc-rose"
+              style="background: #fdf0f4"
+            ></button>
+            <button
+              class="swatch"
+              role="radio"
+              aria-label="Lavender"
+              data-action="pick-color"
+              data-cc="cc-lavender"
+              style="background: #f2f0fb"
+            ></button>
+            <button
+              class="swatch"
+              role="radio"
+              aria-label="Amber"
+              data-action="pick-color"
+              data-cc="cc-amber"
+              style="background: #fdf6e3"
+            ></button>
+            <button
+              class="swatch"
+              role="radio"
+              aria-label="Slate"
+              data-action="pick-color"
+              data-cc="cc-slate"
+              style="background: #f0f2f6"
+            ></button>
+            <button
+              class="swatch"
+              role="radio"
+              aria-label="Mint"
+              data-action="pick-color"
+              data-cc="cc-mint"
+              style="background: #edf8f5"
+            ></button>
+          </div>
+        </div>
 
-// ── Modal ──────────────────────────────────────────────────────────────────
-function openModal(id = null) {
-  editingId = id;
-  document.getElementById('modal-title').textContent = id ? 'Edit event' : 'New event';
+        <div class="modal-actions">
+          <button class="btn btn-outline" data-action="close-modal">Cancel</button>
+          <button class="btn btn-primary" data-action="save-event">Save event</button>
+        </div>
+      </div>
+    </div>
 
-  if (id) {
-    const ev = events.find(e => e.id === id);
-    document.getElementById('inp-title').value = ev.title;
-    document.getElementById('inp-date').value  = ev.date;
-    setColor(ev.color);
-  } else {
-    document.getElementById('inp-title').value = '';
-    document.getElementById('inp-date').value  = '';
-    setColor('cc-cream');
-  }
+    <!-- Delete confirm -->
+    <div class="confirm-overlay" id="confirm-overlay">
+      <div class="confirm-box" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+        <div class="confirm-title" id="confirm-title">Remove this event?</div>
+        <div class="confirm-body">This can't be undone.</div>
+        <div class="confirm-actions">
+          <button class="btn btn-outline" data-action="close-confirm">Cancel</button>
+          <button class="btn btn-danger" data-action="confirm-delete">Remove</button>
+        </div>
+      </div>
+    </div>
 
-  document.getElementById('overlay').classList.add('open');
-  setTimeout(() => {
-    const inp = document.getElementById('inp-title');
-    inp.focus();
-  }, 80);
-}
-
-function closeModal() {
-  document.getElementById('overlay').classList.remove('open');
-  editingId = null;
-}
-
-function handleOverlayClick(e) {
-  if (e.target === document.getElementById('overlay')) closeModal();
-}
-
-function setColor(cc) {
-  selectedColor = cc;
-  document.querySelectorAll('.swatch').forEach(s => {
-    s.classList.toggle('active', s.dataset.cc === cc);
-  });
-}
-
-function pickColor(el) {
-  setColor(el.dataset.cc);
-}
-
-async function saveEvent() {
-  const title = document.getElementById('inp-title').value.trim();
-  const date  = document.getElementById('inp-date').value;
-
-  if (!date) {
-    document.getElementById('inp-date').focus();
-    document.getElementById('inp-date').style.borderColor = '#e06060';
-    setTimeout(() => document.getElementById('inp-date').style.borderColor = '', 1400);
-    return;
-  }
-
-  const data = { title, date, color: selectedColor };
-
-  if (currentUser && window._firestore) {
-    try {
-      if (editingId) {
-        await window._firestore.updateEvent(editingId, data);
-        const ev = events.find(e => e.id === editingId);
-        Object.assign(ev, data);
-        showToast('Event updated');
-      } else {
-        const id = await window._firestore.addEvent(data);
-        events.push({ id, ...data });
-        showToast('Event added');
-      }
-    } catch (err) {
-      console.error('Save error:', err);
-      showToast('Failed to save. Please try again.');
-      return;
-    }
-  } else {
-    // Signed out — local only (sample mode)
-    if (editingId) {
-      const ev = events.find(e => e.id === editingId);
-      Object.assign(ev, data);
-      showToast('Event updated');
-    } else {
-      events.push({ id: 'local-' + Date.now(), ...data });
-      showToast('Event added');
-    }
-  }
-
-  closeModal();
-  renderGrid();
-}
-
-function editEvent(id) {
-  // Prevent click propagation from card controls
-  openModal(id);
-}
-
-// ── Delete confirm ─────────────────────────────────────────────────────────
-function askDelete(id) {
-  pendingDeleteId = id;
-  document.getElementById('confirm-overlay').classList.add('open');
-}
-
-function closeConfirm() {
-  pendingDeleteId = null;
-  document.getElementById('confirm-overlay').classList.remove('open');
-}
-
-async function confirmDelete() {
-  if (pendingDeleteId !== null) {
-    if (currentUser && window._firestore) {
-      try {
-        await window._firestore.deleteEvent(pendingDeleteId);
-      } catch (err) {
-        console.error('Delete error:', err);
-        showToast('Failed to remove. Please try again.');
-        closeConfirm();
-        return;
-      }
-    }
-    events = events.filter(e => e.id !== pendingDeleteId);
-    closeConfirm();
-    renderGrid();
-    showToast('Event removed');
-  }
-}
-
-// Click outside confirm box closes it
-document.getElementById('confirm-overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('confirm-overlay')) closeConfirm();
-});
-
-// ── Toast ──────────────────────────────────────────────────────────────────
-let toastTimer = null;
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
-}
-
-// ── View toggle ───────────────────────────────────────────────────────────
-let currentView = 'meadow';
-
-function switchView(view) {
-  currentView = view;
-  document.querySelectorAll('.view-toggle button').forEach(b => {
-    b.classList.toggle('active', b.dataset.view === view);
-  });
-  document.getElementById('meadow-view').classList.toggle('active', view === 'meadow');
-  document.getElementById('calendar-view').classList.toggle('active', view === 'calendar');
-  if (view === 'calendar') renderCalendar();
-}
-
-// ── Calendar rendering ────────────────────────────────────────────────────
-const DOT_CLASS_MAP = {
-  'cc-cream': 'cal-dot-cream',
-  'cc-sage': 'cal-dot-sage',
-  'cc-sky': 'cal-dot-sky',
-  'cc-rose': 'cal-dot-rose',
-  'cc-lavender': 'cal-dot-lavender',
-  'cc-amber': 'cal-dot-amber',
-  'cc-slate': 'cal-dot-slate',
-  'cc-mint': 'cal-dot-mint',
-};
-
-function renderCalendar() {
-  const container = document.getElementById('calendar-view');
-  container.innerHTML = '';
-
-  const now = new Date();
-  const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-
-  // Build event lookup by date
-  const eventsByDate = {};
-  events.forEach(ev => {
-    if (!eventsByDate[ev.date]) eventsByDate[ev.date] = [];
-    eventsByDate[ev.date].push(ev);
-  });
-
-  // Determine month range: current month to last event month (min 3 months)
-  const startMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  let endMonth = new Date(now.getFullYear(), now.getMonth() + 3, 1);
-  events.forEach(ev => {
-    const [y, m] = ev.date.split('-').map(Number);
-    const evMonth = new Date(y, m - 1, 1);
-    if (evMonth > endMonth) endMonth = evMonth;
-  });
-
-  const cursor = new Date(startMonth);
-  const WDAY_LABELS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-
-  while (cursor <= endMonth) {
-    const year = cursor.getFullYear();
-    const month = cursor.getMonth();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    // Monday-based: 0=Mon, 6=Sun
-    let firstDay = new Date(year, month, 1).getDay();
-    firstDay = (firstDay + 6) % 7; // shift so Mon=0
-
-    const monthEl = document.createElement('div');
-    monthEl.className = 'cal-month';
-
-    // Header
-    const headerEl = document.createElement('div');
-    headerEl.className = 'cal-month-header';
-    headerEl.textContent = `${MONTHS[month]} ${year}`;
-    monthEl.appendChild(headerEl);
-
-    // Weekday labels
-    const weekdaysEl = document.createElement('div');
-    weekdaysEl.className = 'cal-weekdays';
-    WDAY_LABELS.forEach(label => {
-      const wd = document.createElement('div');
-      wd.className = 'cal-weekday-label';
-      wd.textContent = label;
-      weekdaysEl.appendChild(wd);
-    });
-    monthEl.appendChild(weekdaysEl);
-
-    // Days grid
-    const daysEl = document.createElement('div');
-    daysEl.className = 'cal-days';
-
-    // Empty cells before first day
-    for (let i = 0; i < firstDay; i++) {
-      const empty = document.createElement('div');
-      empty.className = 'cal-day cal-day-empty';
-      daysEl.appendChild(empty);
-    }
-
-    for (let d = 1; d <= daysInMonth; d++) {
-      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const dayEl = document.createElement('div');
-      dayEl.className = 'cal-day';
-
-      // Past / today / future
-      if (dateStr < todayStr) dayEl.classList.add('cal-past');
-      else if (dateStr === todayStr) dayEl.classList.add('cal-today');
-
-      // Day number
-      const numEl = document.createElement('div');
-      numEl.className = 'cal-day-num';
-      numEl.textContent = d;
-      dayEl.appendChild(numEl);
-
-      // Events on this day
-      const dayEvents = eventsByDate[dateStr];
-      if (dayEvents) {
-        dayEvents.forEach(ev => {
-          const dotWrap = document.createElement('div');
-          dotWrap.className = 'cal-event-dot';
-          dotWrap.onclick = (e) => { e.stopPropagation(); openModal(ev.id); };
-
-          const dot = document.createElement('div');
-          dot.className = `cal-dot ${DOT_CLASS_MAP[ev.color] || 'cal-dot-cream'}`;
-
-          const titleEl = document.createElement('div');
-          titleEl.className = 'cal-event-title';
-          titleEl.textContent = ev.title || fmtDate(ev.date);
-
-          // Countdown tooltip
-          const cd = buildCountdown(ev.date);
-          const tooltip = document.createElement('div');
-          tooltip.className = 'cal-tooltip';
-          tooltip.textContent = cd.num === '—' ? 'Today' : `${cd.num} ${cd.unit}`;
-
-          dotWrap.appendChild(dot);
-          dotWrap.appendChild(titleEl);
-          dotWrap.appendChild(tooltip);
-          dayEl.appendChild(dotWrap);
-        });
-      }
-
-      daysEl.appendChild(dayEl);
-    }
-
-    monthEl.appendChild(daysEl);
-    container.appendChild(monthEl);
-
-    // Next month
-    cursor.setMonth(cursor.getMonth() + 1);
-  }
-}
-
-// ── Keyboard shortcuts ─────────────────────────────────────────────────────
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    closeModal();
-    closeConfirm();
-  }
-  if ((e.key === 'n' || e.key === 'N') && !e.metaKey && !e.ctrlKey) {
-    const active = document.activeElement;
-    if (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA') return;
-    openModal();
-  }
-});
-
-// ── Init ───────────────────────────────────────────────────────────────────
-renderToday();
-// Grid rendering deferred until auth state resolves (avoids flash of sample events)
-
-// Refresh today card at midnight
-function scheduleRefresh() {
-  const now = new Date();
-  const ms  = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) - now;
-  setTimeout(() => { renderToday(); renderGrid(); scheduleRefresh(); }, ms);
-}
-scheduleRefresh();
-</script>
-
-<!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js';
-  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
-  import { initializeFirestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
-  import { getAnalytics } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-analytics.js';
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyBDA_fUZyx0oC5ZKpNJ3ZThOSXQImnhvOk",
-    authDomain: "daymeadow-55cc0.firebaseapp.com",
-    projectId: "daymeadow-55cc0",
-    storageBucket: "daymeadow-55cc0.firebasestorage.app",
-    messagingSenderId: "991701305214",
-    appId: "1:991701305214:web:7ab2de77a683c41fea552f",
-    measurementId: "G-6XFMKDNW2Z"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const auth = getAuth(app);
-  const db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
-  const provider = new GoogleAuthProvider();
-
-  // ── Firestore helpers (exposed to global scope) ──────────────────────────
-  function userEventsCol(uid) {
-    return collection(db, 'users', uid, 'events');
-  }
-
-  window._firestore = {
-    async loadEvents(uid) {
-      const snap = await getDocs(userEventsCol(uid));
-      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    },
-    async addEvent(data) {
-      const ref = await addDoc(userEventsCol(currentUser.uid), {
-        title: data.title,
-        date: data.date,
-        color: data.color,
-      });
-      return ref.id;
-    },
-    async updateEvent(id, data) {
-      await updateDoc(doc(db, 'users', currentUser.uid, 'events', id), {
-        title: data.title,
-        date: data.date,
-        color: data.color,
-      });
-    },
-    async deleteEvent(id) {
-      await deleteDoc(doc(db, 'users', currentUser.uid, 'events', id));
-    },
-  };
-
-  // ── Auth ─────────────────────────────────────────────────────────────────
-  window.signInWithGoogle = async function() {
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (err) {
-      if (err.code !== 'auth/popup-closed-by-user') {
-        console.error('Sign-in error:', err);
-        showToast('Sign-in failed. Please try again.');
-      }
-    }
-  };
-
-  window.signOut = async function() {
-    try {
-      await fbSignOut(auth);
-      showToast('Signed out');
-    } catch (err) {
-      console.error('Sign-out error:', err);
-    }
-  };
-
-  let bannerDismissed = false;
-  window.dismissBanner = function() {
-    bannerDismissed = true;
-    document.getElementById('signin-banner').style.display = 'none';
-  };
-
-  // ── Auth state listener ──────────────────────────────────────────────────
-  onAuthStateChanged(auth, async (user) => {
-    const banner    = document.getElementById('signin-banner');
-    const headerBtn = document.getElementById('header-signin');
-    const userPill  = document.getElementById('header-user');
-    const signoutBtn = document.getElementById('header-signout');
-    const userName  = document.getElementById('user-name');
-    const userAvatar = document.getElementById('user-avatar');
-
-    if (user) {
-      // Signed in
-      currentUser = user;
-      banner.style.display = 'none';
-      headerBtn.style.display = 'none';
-      userPill.style.display = 'flex';
-      signoutBtn.style.display = '';
-      userName.textContent = user.displayName || user.email;
-      userAvatar.src = user.photoURL || '';
-      userAvatar.style.display = user.photoURL ? '' : 'none';
-
-      // Load events from Firestore
-      try {
-        events = await window._firestore.loadEvents(user.uid);
-        renderGrid();
-      } catch (err) {
-        console.error('Failed to load events:', err);
-        showToast('Could not load your events.');
-      }
-    } else {
-      // Signed out — show sample events
-      currentUser = null;
-      events = [...SAMPLE_EVENTS];
-      renderGrid();
-      if (!bannerDismissed) banner.style.display = '';
-      headerBtn.style.display = '';
-      userPill.style.display = 'none';
-      signoutBtn.style.display = 'none';
-    }
-  });
-</script>
-</body>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
 </html>

@@ -7,6 +7,16 @@ const $ = (id) => document.getElementById(id);
 
 const COLORS = ['cc-cream', 'cc-sage', 'cc-sky', 'cc-rose', 'cc-lavender', 'cc-amber', 'cc-slate', 'cc-mint'];
 
+// Tags are switched off for now. Existing tags are still loaded and kept on save.
+const TAGS_ENABLED = false;
+
+// Signed-out banner copy, depending on what the visitor is looking at.
+const BANNER_COPY = {
+  examples: '<strong>These are example events.</strong><span class="hide-mobile"> Sign in to add your own.</span>',
+  unsaved: '<strong>Not saved yet.</strong><span class="hide-mobile"> Sign in to keep your events.</span>',
+  empty: '<strong>Sign in to save your events.</strong>',
+};
+
 // ── State ──────────────────────────────────────────────────────────────────
 let events = [];
 let editingId = null;
@@ -15,7 +25,7 @@ let pendingDeleteId = null;
 let currentUser = null;
 let currentView = 'board';
 let unwatchEvents = null;
-let bannerDismissed = false;
+let dismissedBanner = null; // which BANNER_COPY key was dismissed
 let activeTag = null;
 let draftTags = [];
 
@@ -40,7 +50,7 @@ function visibleEvents() {
 }
 
 function tagPills(tags) {
-  if (!tags.length) return '';
+  if (!TAGS_ENABLED || !tags.length) return '';
   const pills = tags
     .map((t) => `<button class="tag" data-action="filter-tag" data-tag="${esc(t)}">${esc(t)}</button>`)
     .join('');
@@ -94,6 +104,10 @@ function renderGrid() {
 // ── Tag filter ─────────────────────────────────────────────────────────────
 function renderTagFilter() {
   const bar = $('tag-filter');
+  if (!TAGS_ENABLED) {
+    bar.hidden = true;
+    return;
+  }
   const tags = collectTags(events);
   if (activeTag && !tags.includes(activeTag)) activeTag = null;
   bar.hidden = tags.length === 0;
@@ -116,8 +130,21 @@ function setActiveTag(tag) {
   renderGrid();
 }
 
+function bannerKey() {
+  if (events.some((e) => e.sample)) return 'examples';
+  return events.length ? 'unsaved' : 'empty';
+}
+
+// A dismissed banner comes back when its message changes, e.g. once examples give way to unsaved events.
+function updateBanner() {
+  const key = bannerKey();
+  $('signin-banner-text').innerHTML = BANNER_COPY[key];
+  $('signin-banner').hidden = Boolean(currentUser) || dismissedBanner === key;
+}
+
 function setEvents(next) {
   events = next;
+  updateBanner();
   renderGrid();
 }
 
@@ -223,7 +250,9 @@ async function saveEvent() {
   } else if (editing) {
     setEvents(events.map((e) => (e.id === editing ? { ...e, ...data } : e)));
   } else {
-    setEvents([...events, { id: `local-${Date.now()}`, ...data }]);
+    // A visitor's first event replaces the examples.
+    const own = events.filter((e) => !e.sample);
+    setEvents([...own, { id: `local-${Date.now()}`, ...data }]);
   }
 
   showToast(editing ? 'Event updated' : 'Event added');
@@ -382,7 +411,6 @@ async function signOut() {
 }
 
 function showSignedIn(user) {
-  $('signin-banner').hidden = true;
   $('header-signin').hidden = true;
   $('header-user').hidden = false;
   $('header-signout').hidden = false;
@@ -392,7 +420,6 @@ function showSignedIn(user) {
 }
 
 function showSignedOut() {
-  $('signin-banner').hidden = bannerDismissed;
   $('header-signin').hidden = false;
   $('header-user').hidden = true;
   $('header-signout').hidden = true;
@@ -403,6 +430,7 @@ fb.watchAuth((user) => {
   unwatchEvents?.();
   unwatchEvents = null;
   currentUser = user;
+  updateBanner();
 
   if (user) {
     showSignedIn(user);
@@ -421,7 +449,7 @@ const ACTIONS = {
   'sign-in': signIn,
   'sign-out': signOut,
   'dismiss-banner': () => {
-    bannerDismissed = true;
+    dismissedBanner = bannerKey();
     $('signin-banner').hidden = true;
   },
   'toggle-theme': toggleTheme,
@@ -494,6 +522,7 @@ document.addEventListener('keydown', (e) => {
 // ── Init ───────────────────────────────────────────────────────────────────
 syncThemeButton();
 renderToday();
+$('tags-field').hidden = !TAGS_ENABLED;
 
 // Refresh countdowns at local midnight.
 (function scheduleMidnightRefresh() {
